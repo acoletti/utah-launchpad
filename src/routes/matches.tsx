@@ -7,7 +7,7 @@ import { useState } from "react";
 
 export const Route = createFileRoute("/matches")({
   component: MatchesPage,
-  head: () => ({ meta: [{ title: "Matches — EyeToEye" }] }),
+  head: () => ({ meta: [{ title: "Matches — LaunchHive" }] }),
 });
 
 function MatchesPage() {

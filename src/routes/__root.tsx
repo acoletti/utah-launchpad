@@ -72,10 +72,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "EyeToEye — AI matching for Utah deep tech" },
+      { title: "LaunchHive — AI matching for Utah deep tech" },
       { name: "description", content: "AI-native commercialization infrastructure connecting talent with university spinouts from U of U, BYU, and USU." },
       { name: "author", content: "Nucleus Utah" },
-      { property: "og:title", content: "EyeToEye — by Nucleus" },
+      { property: "og:title", content: "LaunchHive — by Nucleus" },
       { property: "og:description", content: "Match Utah's deep-tech startups with the operators, executives, and students who can commercialize them." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

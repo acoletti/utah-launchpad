@@ -7,7 +7,7 @@ export const Route = createFileRoute("/")({
   component: Landing,
   head: () => ({
     meta: [
-      { title: "EyeToEye — AI matching for Utah deep tech" },
+      { title: "LaunchHive — AI matching for Utah deep tech" },
       { name: "description", content: "Match Utah's deep-tech startups with the executives, operators, and students who can commercialize them. Built by Nucleus." },
     ],
   }),
@@ -41,7 +41,7 @@ function Hero() {
             The bridge between <em className="text-electric not-italic">labs</em> and the operators who turn them into companies.
           </h1>
           <p className="mt-6 text-lg text-muted-foreground max-w-2xl leading-relaxed">
-            EyeToEye is AI-native commercialization infrastructure for Utah deep tech. We replace the LinkedIn sprawl and warm-intro lottery with explainable, ecosystem-aware matches between research spinouts and the talent that can ship them.
+            LaunchHive is AI-native commercialization infrastructure for Utah deep tech. We replace the LinkedIn sprawl and warm-intro lottery with explainable, ecosystem-aware matches between research spinouts and the talent that can ship them.
           </p>
           <div className="mt-9 flex flex-wrap gap-3">
             <Link to="/onboarding" className="btn-primary hover:[filter:brightness(1.08)]">Start your profile →</Link>
@@ -86,7 +86,7 @@ function Problem() {
     { title: "Job boards", body: "Optimized for transactions, not commercialization. A founding-CEO seat at a TRL-3 spinout doesn't render on Indeed.", tone: "muted" },
     { title: "LinkedIn", body: "Connection-graph search. You find the right person only if you already half-knew them.", tone: "muted" },
     { title: "Warm intros", body: "High signal, but capped by Eliza's calendar. Not a system.", tone: "muted" },
-    { title: "EyeToEye", body: "Reads spinout decks, lab pages, and operator profiles, then explains every match in plain English. Built on Utah's actual graph.", tone: "electric" },
+    { title: "LaunchHive", body: "Reads spinout decks, lab pages, and operator profiles, then explains every match in plain English. Built on Utah's actual graph.", tone: "electric" },
   ];
   return (
     <section className="container-x py-24">

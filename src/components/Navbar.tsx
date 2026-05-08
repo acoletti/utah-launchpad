@@ -7,7 +7,7 @@ export function Navbar() {
         <Link to="/" className="flex items-center gap-2.5 group">
           <LogoMark />
           <div className="leading-none">
-            <div className="font-display text-lg tracking-tight">EyeToEye</div>
+            <div className="font-display text-lg tracking-tight">LaunchHive</div>
             <div className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground font-mono">by Nucleus</div>
           </div>
         </Link>

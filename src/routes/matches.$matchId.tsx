@@ -15,7 +15,7 @@ export const Route = createFileRoute("/matches/$matchId")({
     <div className="min-h-screen flex items-center justify-center"><div>Match not found · <Link to="/matches" className="text-electric underline">Back</Link></div></div>
   ),
   errorComponent: ({ error }) => <div className="p-10">Error: {error.message}</div>,
-  head: ({ loaderData }) => ({ meta: [{ title: `${loaderData?.match.talent.name} ↔ ${loaderData?.match.startup.name} — EyeToEye` }] }),
+  head: ({ loaderData }) => ({ meta: [{ title: `${loaderData?.match.talent.name} ↔ ${loaderData?.match.startup.name} — LaunchHive` }] }),
 });
 
 function MatchDetail() {
