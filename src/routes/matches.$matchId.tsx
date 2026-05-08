@@ -19,7 +19,7 @@ export const Route = createFileRoute("/matches/$matchId")({
 });
 
 function MatchDetail() {
-  const { match: m } = Route.useLoaderData();
+  const { match: m } = Route.useLoaderData() as { match: typeof matches[number] };
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
