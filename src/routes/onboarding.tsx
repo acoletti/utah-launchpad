@@ -5,7 +5,7 @@ import { useState } from "react";
 
 export const Route = createFileRoute("/onboarding")({
   component: Onboarding,
-  head: () => ({ meta: [{ title: "Onboarding — EyeToEye" }] }),
+  head: () => ({ meta: [{ title: "Onboarding — LaunchHive" }] }),
 });
 
 type Step = { id: string; title: string };

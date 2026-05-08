@@ -4,7 +4,7 @@ import { Footer } from "@/components/Footer";
 
 export const Route = createFileRoute("/ecosystem")({
   component: EcosystemPage,
-  head: () => ({ meta: [{ title: "Utah Ecosystem Map — EyeToEye" }] }),
+  head: () => ({ meta: [{ title: "Utah Ecosystem Map — LaunchHive" }] }),
 });
 
 type Node = { id: string; label: string; type: "uni" | "startup" | "talent" | "program"; x: number; y: number };

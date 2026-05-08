@@ -4,7 +4,7 @@ import { Footer } from "@/components/Footer";
 
 export const Route = createFileRoute("/how-it-works")({
   component: HowItWorks,
-  head: () => ({ meta: [{ title: "How EyeToEye works — architecture & models" }] }),
+  head: () => ({ meta: [{ title: "How LaunchHive works — architecture & models" }] }),
 });
 
 function HowItWorks() {
@@ -15,7 +15,7 @@ function HowItWorks() {
         <div className="max-w-3xl">
           <span className="chip">Architecture</span>
           <h1 className="font-display text-5xl mt-4">One reasoning surface. Many grounded inputs.</h1>
-          <p className="text-muted-foreground mt-4 text-lg leading-relaxed">EyeToEye uses a centralized AI orchestration model — Gemini — wrapped around a Utah-specific RAG pipeline and a hybrid scoring engine. No agent swarm, no autonomous theater. Just an explainable system.</p>
+          <p className="text-muted-foreground mt-4 text-lg leading-relaxed">LaunchHive uses a centralized AI orchestration model — Gemini — wrapped around a Utah-specific RAG pipeline and a hybrid scoring engine. No agent swarm, no autonomous theater. Just an explainable system.</p>
         </div>
 
         <div className="mt-12 card-surface p-8">
