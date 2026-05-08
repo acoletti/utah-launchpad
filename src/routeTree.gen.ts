@@ -11,7 +11,10 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as MatchesRouteImport } from './routes/matches'
+import { Route as HowItWorksRouteImport } from './routes/how-it-works'
+import { Route as EcosystemRouteImport } from './routes/ecosystem'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as MatchesMatchIdRouteImport } from './routes/matches.$matchId'
 
 const OnboardingRoute = OnboardingRouteImport.update({
   id: '/onboarding',
@@ -23,39 +26,84 @@ const MatchesRoute = MatchesRouteImport.update({
   path: '/matches',
   getParentRoute: () => rootRouteImport,
 } as any)
+const HowItWorksRoute = HowItWorksRouteImport.update({
+  id: '/how-it-works',
+  path: '/how-it-works',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EcosystemRoute = EcosystemRouteImport.update({
+  id: '/ecosystem',
+  path: '/ecosystem',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MatchesMatchIdRoute = MatchesMatchIdRouteImport.update({
+  id: '/$matchId',
+  path: '/$matchId',
+  getParentRoute: () => MatchesRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/matches': typeof MatchesRoute
+  '/ecosystem': typeof EcosystemRoute
+  '/how-it-works': typeof HowItWorksRoute
+  '/matches': typeof MatchesRouteWithChildren
   '/onboarding': typeof OnboardingRoute
+  '/matches/$matchId': typeof MatchesMatchIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/matches': typeof MatchesRoute
+  '/ecosystem': typeof EcosystemRoute
+  '/how-it-works': typeof HowItWorksRoute
+  '/matches': typeof MatchesRouteWithChildren
   '/onboarding': typeof OnboardingRoute
+  '/matches/$matchId': typeof MatchesMatchIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/matches': typeof MatchesRoute
+  '/ecosystem': typeof EcosystemRoute
+  '/how-it-works': typeof HowItWorksRoute
+  '/matches': typeof MatchesRouteWithChildren
   '/onboarding': typeof OnboardingRoute
+  '/matches/$matchId': typeof MatchesMatchIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/matches' | '/onboarding'
+  fullPaths:
+    | '/'
+    | '/ecosystem'
+    | '/how-it-works'
+    | '/matches'
+    | '/onboarding'
+    | '/matches/$matchId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/matches' | '/onboarding'
-  id: '__root__' | '/' | '/matches' | '/onboarding'
+  to:
+    | '/'
+    | '/ecosystem'
+    | '/how-it-works'
+    | '/matches'
+    | '/onboarding'
+    | '/matches/$matchId'
+  id:
+    | '__root__'
+    | '/'
+    | '/ecosystem'
+    | '/how-it-works'
+    | '/matches'
+    | '/onboarding'
+    | '/matches/$matchId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  MatchesRoute: typeof MatchesRoute
+  EcosystemRoute: typeof EcosystemRoute
+  HowItWorksRoute: typeof HowItWorksRoute
+  MatchesRoute: typeof MatchesRouteWithChildren
   OnboardingRoute: typeof OnboardingRoute
 }
 
@@ -75,6 +123,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MatchesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/how-it-works': {
+      id: '/how-it-works'
+      path: '/how-it-works'
+      fullPath: '/how-it-works'
+      preLoaderRoute: typeof HowItWorksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ecosystem': {
+      id: '/ecosystem'
+      path: '/ecosystem'
+      fullPath: '/ecosystem'
+      preLoaderRoute: typeof EcosystemRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -82,12 +144,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/matches/$matchId': {
+      id: '/matches/$matchId'
+      path: '/$matchId'
+      fullPath: '/matches/$matchId'
+      preLoaderRoute: typeof MatchesMatchIdRouteImport
+      parentRoute: typeof MatchesRoute
+    }
   }
 }
 
+interface MatchesRouteChildren {
+  MatchesMatchIdRoute: typeof MatchesMatchIdRoute
+}
+
+const MatchesRouteChildren: MatchesRouteChildren = {
+  MatchesMatchIdRoute: MatchesMatchIdRoute,
+}
+
+const MatchesRouteWithChildren =
+  MatchesRoute._addFileChildren(MatchesRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  MatchesRoute: MatchesRoute,
+  EcosystemRoute: EcosystemRoute,
+  HowItWorksRoute: HowItWorksRoute,
+  MatchesRoute: MatchesRouteWithChildren,
   OnboardingRoute: OnboardingRoute,
 }
 export const routeTree = rootRouteImport
