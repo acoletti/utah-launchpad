@@ -224,6 +224,7 @@ export const matches: Match[] = [
     ],
     gaps: [
       "OT/ICS-specific GTM is new — 4-week ramp recommended with VP Eng.",
+      "OT/ICS domain knowledge gap.",
     ],
     nextSteps: [
       "Working session on Q1 hiring plan.",

@@ -112,7 +112,35 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <div className="noise-texture" />
+      <ScrollProgress />
       <Outlet />
     </QueryClientProvider>
   );
 }
+
+function ScrollProgress() {
+  const [progress, setProgress] = (typeof window !== "undefined") ? React.useState(0) : [0, () => {}];
+
+  React.useEffect(() => {
+    const handleScroll = () => {
+      const h = document.documentElement, 
+            b = document.body,
+            st = "scrollTop",
+            sh = "scrollHeight";
+      const scrollPercent = (h[st] || b[st]) / ((h[sh] || b[sh]) - h.clientHeight) * 100;
+      setProgress(scrollPercent);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  return (
+    <div 
+      className="scroll-progress" 
+      style={{ width: `${progress}%` }} 
+    />
+  );
+}
+
+import React from "react";

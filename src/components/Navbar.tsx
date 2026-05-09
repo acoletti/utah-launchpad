@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { useMagnetic } from "@/hooks/useHighFidelity";
 
 export function Navbar() {
   return (
@@ -14,7 +15,7 @@ export function Navbar() {
           </div>
         </Link>
         
-        <div className="hidden md:flex items-center gap-10">
+        <div className="hidden md:flex items-center gap-6">
           <NavLink to="/dashboard">Your Space</NavLink>
           <NavLink to="/matches">Discover</NavLink>
           <NavLink to="/ecosystem">The Map</NavLink>
@@ -38,13 +39,24 @@ export function Navbar() {
 }
 
 function NavLink({ to, children }: { to: string; children: React.ReactNode }) {
+  const { ref, position, handleMouseMove, handleMouseLeave, handleMouseEnter } = useMagnetic(8);
+  
   return (
-    <Link 
-      to={to} 
-      className="text-sm font-display font-medium text-muted-foreground hover:text-foreground transition-all relative group py-2"
+    <div 
+      ref={ref}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      onMouseEnter={handleMouseEnter}
+      style={{ transform: `translate(${position.x}px, ${position.y}px)` }}
+      className="transition-transform duration-300 ease-out"
     >
-      {children}
-      <span className="absolute -bottom-1 left-0 w-0 h-px bg-electric transition-all duration-500 group-hover:w-full" />
-    </Link>
+      <Link 
+        to={to} 
+        className="text-sm font-display font-medium text-muted-foreground hover:text-foreground transition-all relative group py-2 px-3"
+      >
+        {children}
+        <span className="absolute -bottom-1 left-3 w-0 h-px bg-electric transition-all duration-500 group-hover:w-[calc(100%-24px)]" />
+      </Link>
+    </div>
   );
 }

@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import { useState } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import { OnboardingWizard } from "@/components/OnboardingWizard";
+import { useMagnetic, useAudioTick } from "@/hooks/useHighFidelity";
 
 export const Route = createFileRoute("/onboarding")({
   component: OnboardingPage,
@@ -11,9 +12,50 @@ export const Route = createFileRoute("/onboarding")({
 
 type Step = { id: string; title: string };
 
+function TextScramble({ text, delay = 0 }: { text: string; delay?: number }) {
+  const [displayText, setDisplayText] = useState("");
+  const [isScrambling, setIsScrambling] = useState(false);
+  const chars = "!<>-_\\/[]{}—=+*^?#________";
+  
+  useEffect(() => {
+    let iteration = 0;
+    let interval: any;
+    
+    const timeout = setTimeout(() => {
+      setIsScrambling(true);
+      interval = setInterval(() => {
+        setDisplayText(
+          text.split("")
+            .map((char, index) => {
+              if (index < iteration) return text[index];
+              return chars[Math.floor(Math.random() * chars.length)];
+            })
+            .join("")
+        );
+        
+        if (iteration >= text.length) {
+          clearInterval(interval);
+          setIsScrambling(false);
+        }
+        iteration += 1 / 3;
+      }, 30);
+    }, delay);
+
+    return () => {
+      clearTimeout(timeout);
+      clearInterval(interval);
+    };
+  }, [text, delay]);
+
+  return <span className={isScrambling ? "text-scramble" : ""}>{displayText}</span>;
+}
+
 function OnboardingPage() {
   const [userType, setUserType] = useState<string | null>(null);
   const [stage, setStage] = useState(0);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [glowPos, setGlowPos] = useState({ x: 0, y: 0 });
+  
   const [formData, setFormData] = useState({
     lookingFor: "",
     experience: "",
@@ -23,6 +65,23 @@ function OnboardingPage() {
     roleType: "",
     links: "",
   });
+
+  const handleMouseMove = useCallback((e: any) => {
+    setMousePos({ x: e.clientX, y: e.clientY });
+  }, []);
+
+  useEffect(() => {
+    let frame: number;
+    const animate = () => {
+      setGlowPos(prev => ({
+        x: prev.x + (mousePos.x - prev.x) * 0.1,
+        y: prev.y + (mousePos.y - prev.y) * 0.1
+      }));
+      frame = requestAnimationFrame(animate);
+    };
+    frame = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(frame);
+  }, [mousePos]);
 
   if (!userType) return <RolePicker onPick={setUserType} />;
 
@@ -34,14 +93,18 @@ function OnboardingPage() {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div 
+      className="min-h-screen flex flex-col bg-background relative selection:bg-electric/30"
+      onMouseMove={handleMouseMove}
+    >
+      <div className="cursor-glow" style={{ left: glowPos.x, top: glowPos.y }} />
       <Navbar />
-      <div className="flex-1 flex justify-center py-24 px-4">
+      <div className="flex-1 flex justify-center py-24 px-4 relative z-10">
         <OnboardingWizard steps={steps} currentStep={stage}>
           <div className="space-y-12">
             <header className="space-y-4">
               <span className="chip bg-electric/10 text-electric border-electric/20 uppercase tracking-[0.2em] text-[10px] py-1 px-3">
-                {stage === 3 ? "The final check" : `Part ${stage + 1} of ${steps.length}`}
+                <TextScramble text={stage === 3 ? "The final check" : `Part ${stage + 1} of ${steps.length}`} delay={500} />
               </span>
               <h1 className="text-5xl font-display text-foreground leading-tight">
                 {stage === 0 && "What are you dreaming of building?"}
@@ -100,38 +163,22 @@ function RolePicker({ onPick }: { onPick: (r: string) => void }) {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-screen flex flex-col bg-background relative overflow-hidden">
+      <div className="absolute inset-0 radial-spot opacity-30" />
       <Navbar />
-      <main className="flex-1 flex flex-col items-center justify-center py-24 px-4 relative overflow-hidden">
-        <div className="absolute inset-0 radial-spot opacity-30" />
-        
-        <div className="w-full max-w-[1000px] relative space-y-16">
-          <div className="text-center space-y-6">
-            <span className="chip bg-electric/10 text-electric border-electric/20 uppercase tracking-[0.25em] text-[10px] py-1.5 px-4">Welcome to the hive</span>
-            <h1 className="text-7xl font-display leading-tight">Tell us about yourself.</h1>
-            <p className="text-2xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">Choose the path that best describes where you are today. We'll take it from there.</p>
+      <main className="flex-1 flex flex-col items-center justify-center py-20 px-4 relative">
+        <div className="w-full max-w-[1000px] relative space-y-12">
+          <div className="text-center space-y-4">
+            <span className="chip bg-electric/10 text-electric border-electric/20 uppercase tracking-[0.25em] text-[10px] py-1.5 px-4">
+              <TextScramble text="Welcome to the hive" delay={300} />
+            </span>
+            <h1 className="text-6xl font-display leading-tight">Tell us about yourself.</h1>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">Choose the path that best describes where you are today. We'll take it from there.</p>
           </div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {roles.map((r) => (
-              <button
-                key={r.id}
-                onClick={() => onPick(r.id)}
-                className="card-surface p-10 text-left hover:card-surface-hover group transition-all duration-500 relative overflow-hidden"
-              >
-                <div 
-                  className="size-16 rounded-2xl bg-surface-elevated border border-border flex items-center justify-center text-3xl group-hover:scale-110 transition-transform duration-700 mb-8 shadow-soft"
-                  style={{ color: r.color }}
-                >
-                  {r.icon}
-                </div>
-                <h2 className="text-2xl font-display mb-3 group-hover:text-electric transition-colors">{r.title}</h2>
-                <p className="text-base text-muted-foreground leading-relaxed">{r.desc}</p>
-                
-                <div className="absolute bottom-0 right-0 p-6 opacity-0 group-hover:opacity-100 transition-all translate-y-4 group-hover:translate-y-0 duration-500">
-                  <span className="text-electric text-3xl">→</span>
-                </div>
-              </button>
+              <RoleCard key={r.id} role={r} onClick={() => onPick(r.id)} />
             ))}
           </div>
         </div>
@@ -141,7 +188,42 @@ function RolePicker({ onPick }: { onPick: (r: string) => void }) {
   );
 }
 
+function RoleCard({ role, onClick }: { role: any; onClick: () => void }) {
+  const { ref, position, handleMouseMove, handleMouseLeave, handleMouseEnter } = useMagnetic(15);
+  
+  return (
+    <div 
+      ref={ref}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      onMouseEnter={handleMouseEnter}
+      style={{ transform: `translate(${position.x}px, ${position.y}px)` }}
+      className="transition-transform duration-300 ease-out"
+    >
+      <button
+        onClick={onClick}
+        className="card-surface p-10 text-left hover:card-surface-hover group transition-all duration-500 relative overflow-hidden h-full"
+      >
+        <div 
+          className="size-16 rounded-2xl bg-surface-elevated border border-border flex items-center justify-center text-3xl group-hover:scale-110 transition-transform duration-700 mb-8 shadow-soft"
+          style={{ color: role.color }}
+        >
+          {role.icon}
+        </div>
+        <h2 className="text-2xl font-display mb-3 group-hover:text-electric transition-colors">{role.title}</h2>
+        <p className="text-base text-muted-foreground leading-relaxed">{role.desc}</p>
+        
+        <div className="absolute bottom-0 right-0 p-6 opacity-0 group-hover:opacity-100 transition-all translate-y-4 group-hover:translate-y-0 duration-500">
+          <span className="text-electric text-3xl">→</span>
+        </div>
+      </button>
+    </div>
+  );
+}
+
 function GoalsStep({ data, update, onContinue }: any) {
+  const playTick = useAudioTick();
+  
   return (
     <div className="card-surface p-12 space-y-10 animate-in fade-in slide-in-from-bottom-6 duration-700">
       <div className="space-y-8">
@@ -160,10 +242,11 @@ function GoalsStep({ data, update, onContinue }: any) {
             {["Full-time", "Fractional", "Advisory", "Board seat", "Internship", "Cofounder"].map((t) => (
               <button
                 key={t}
-                onClick={() => update({ roleType: t })}
+                onMouseEnter={playTick}
+                onClick={() => { playTick(); update({ roleType: t }); }}
                 className={`px-6 py-5 text-sm border rounded-2xl transition-all font-display ${
                   data.roleType === t 
-                    ? "bg-electric text-electric-foreground border-electric shadow-glow" 
+                    ? "bg-electric text-electric-foreground border-electric shadow-glow scale-[1.02]" 
                     : "bg-surface-elevated/40 border-border text-muted-foreground hover:border-foreground hover:text-foreground"
                 }`}
               >

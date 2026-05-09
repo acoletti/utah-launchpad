@@ -126,6 +126,52 @@
     linear-gradient(to right, color-mix(in oklab, var(--foreground) 3%, transparent) 1px, transparent 1px),
     linear-gradient(to bottom, color-mix(in oklab, var(--foreground) 3%, transparent) 1px, transparent 1px);
   background-size: 40px 40px;
+  mask-image: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), black 0%, transparent 40%);
+}
+
+@utility grid-bg-static {
+  background-image:
+    linear-gradient(to right, color-mix(in oklab, var(--foreground) 3%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in oklab, var(--foreground) 3%, transparent) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+@utility noise-texture {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  pointer-events: none;
+  opacity: 0.04;
+  background-image: url("https://grainy-gradients.vercel.app/noise.svg");
+  mix-blend-mode: overlay;
+}
+
+@utility cursor-glow {
+  position: fixed;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, color-mix(in oklab, var(--electric) 15%, transparent), transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 999;
+  transform: translate(-50%, -50%);
+  transition: width 0.3s ease, height 0.3s ease, opacity 0.3s ease;
+  will-change: transform;
+}
+
+@utility grid-pulse {
+  animation: grid-pulse-anim 4s ease-in-out infinite;
+}
+@keyframes grid-pulse-anim {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 0.5; }
+}
+
+@utility liquid-reveal {
+  mask-image: linear-gradient(to bottom, transparent 0%, black 100%);
+  mask-size: 100% 200%;
+  mask-position: 0% 100%;
+  transition: mask-position 1s ease;
 }
 
 @utility radial-spot {
@@ -159,7 +205,7 @@
   border-radius: 10px;
   font-weight: 600;
   font-size: 0.875rem;
-  transition: var(--transition-spring);
+  transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease;
   box-shadow: var(--shadow-glow);
   cursor: pointer;
   border: none;
@@ -200,6 +246,59 @@
 @utility card-surface-hover {
   border-color: color-mix(in oklab, var(--electric) 40%, transparent);
   box-shadow: var(--shadow-premium);
+  transform: translateY(-4px) rotateX(2deg) rotateY(2deg);
+}
+
+@utility reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s cubic-bezier(0.2, 1, 0.3, 1);
+}
+
+@utility reveal-on-scroll-active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@utility reveal-scale {
+  opacity: 0;
+  transform: scale(0.9) translateY(20px);
+  transition: all 1s cubic-bezier(0.2, 1, 0.3, 1);
+}
+
+@utility reveal-scale-active {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+}
+
+@utility parallax-bg {
+  will-change: transform;
+  transition: transform 0.1s linear;
+}
+
+@utility magnetic-btn {
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@utility scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2px;
+  background: var(--color-electric);
+  z-index: 100;
+  transform-origin: left;
+  box-shadow: var(--shadow-glow);
+}
+
+@utility bloom-bg {
+  background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), color-mix(in oklab, var(--electric) 15%, transparent), transparent 40%);
+}
+
+@utility text-scramble {
+  font-family: var(--font-mono);
+  color: var(--color-electric);
+  opacity: 0.8;
 }
 
 @utility sidebar-item {
