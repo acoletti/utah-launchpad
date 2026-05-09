@@ -92,11 +92,14 @@ function OnboardingPage() {
 
 function RolePicker({ onPick }: { onPick: (r: string) => void }) {
   const roles = [
-    { id: "researcher", title: "Researcher", desc: "You've made a discovery in the lab and you're ready to see it change the world.", icon: "⌬", color: "var(--bond)" },
-    { id: "executive", title: "Founder", desc: "You're a builder looking for your next big mission in deep tech.", icon: "⌖", color: "var(--electric)" },
-    { id: "student", title: "Learner", desc: "You're a student or intern ready to lend your energy to something real.", icon: "⌘", color: "var(--signal)" },
-    { id: "advisor", title: "Mentor", desc: "You've been there before and want to help guide the next generation.", icon: "⚗", color: "var(--foreground)" },
-    { id: "admin", title: "Connector", desc: "You manage programs and want to help make better matches.", icon: "⏣", color: "var(--muted-foreground)" },
+    { id: "researcher", title: "Researcher / Founder", desc: "You've made a discovery in the lab and you're ready to commercialize it.", icon: "⌬", color: "var(--bond)" },
+    { id: "operator", title: "Operator / Executive", desc: "You're a seasoned leader looking for your next full-time mission in deep tech.", icon: "⌖", color: "var(--electric)" },
+    { id: "fractional", title: "Fractional", desc: "You offer focused expertise — 5 to 20 hours a week — to multiple startups at once.", icon: "⌗", color: "var(--electric)" },
+    { id: "student", title: "Student", desc: "You're a student or early-career professional ready to lend your energy to something real.", icon: "⌘", color: "var(--signal)" },
+    { id: "mentor", title: "Mentor", desc: "You've built, scaled, or exited before and want to guide the next generation informally.", icon: "⚗", color: "var(--foreground)" },
+    { id: "sme", title: "Subject-Matter Expert", desc: "You're a technical specialist — AI, regulatory, aerospace, life sciences — who advises early-stage ventures.", icon: "⊕", color: "var(--bond)" },
+    { id: "investor", title: "Investor", desc: "You're an angel or VC looking for curated early visibility into Utah's top deep-tech spinouts.", icon: "◈", color: "var(--signal)" },
+    { id: "service-provider", title: "Service Provider", desc: "You offer legal, financial, creative, or operational services and want direct connections with startup teams.", icon: "⏣", color: "var(--muted-foreground)" },
   ];
 
   return (
@@ -112,7 +115,7 @@ function RolePicker({ onPick }: { onPick: (r: string) => void }) {
             <p className="text-2xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">Choose the path that best describes where you are today. We'll take it from there.</p>
           </div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {roles.map((r) => (
               <button
                 key={r.id}
