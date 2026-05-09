@@ -3,7 +3,12 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { useState, useCallback, useEffect, useMemo } from "react";
 import { OnboardingWizard } from "@/components/OnboardingWizard";
-import { useMagnetic, useAudioTick } from "@/hooks/useHighFidelity";
+import { 
+  TextScramble, 
+  Magnetic, 
+  ImmersiveLayout 
+} from "@/components/ui/Immersive";
+import { useAudioTick } from "@/hooks/useHighFidelity";
 
 export const Route = createFileRoute("/onboarding")({
   component: OnboardingPage,
@@ -12,49 +17,10 @@ export const Route = createFileRoute("/onboarding")({
 
 type Step = { id: string; title: string };
 
-function TextScramble({ text, delay = 0 }: { text: string; delay?: number }) {
-  const [displayText, setDisplayText] = useState("");
-  const [isScrambling, setIsScrambling] = useState(false);
-  const chars = "!<>-_\\/[]{}—=+*^?#________";
-  
-  useEffect(() => {
-    let iteration = 0;
-    let interval: any;
-    
-    const timeout = setTimeout(() => {
-      setIsScrambling(true);
-      interval = setInterval(() => {
-        setDisplayText(
-          text.split("")
-            .map((char, index) => {
-              if (index < iteration) return text[index];
-              return chars[Math.floor(Math.random() * chars.length)];
-            })
-            .join("")
-        );
-        
-        if (iteration >= text.length) {
-          clearInterval(interval);
-          setIsScrambling(false);
-        }
-        iteration += 1 / 3;
-      }, 30);
-    }, delay);
-
-    return () => {
-      clearTimeout(timeout);
-      clearInterval(interval);
-    };
-  }, [text, delay]);
-
-  return <span className={isScrambling ? "text-scramble" : ""}>{displayText}</span>;
-}
 
 function OnboardingPage() {
   const [userType, setUserType] = useState<string | null>(null);
   const [stage, setStage] = useState(0);
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-  const [glowPos, setGlowPos] = useState({ x: 0, y: 0 });
   
   const [formData, setFormData] = useState({
     lookingFor: "",
@@ -66,23 +32,6 @@ function OnboardingPage() {
     links: "",
   });
 
-  const handleMouseMove = useCallback((e: any) => {
-    setMousePos({ x: e.clientX, y: e.clientY });
-  }, []);
-
-  useEffect(() => {
-    let frame: number;
-    const animate = () => {
-      setGlowPos(prev => ({
-        x: prev.x + (mousePos.x - prev.x) * 0.1,
-        y: prev.y + (mousePos.y - prev.y) * 0.1
-      }));
-      frame = requestAnimationFrame(animate);
-    };
-    frame = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(frame);
-  }, [mousePos]);
-
   if (!userType) return <RolePicker onPick={setUserType} />;
 
   const steps: Step[] = [
@@ -93,11 +42,7 @@ function OnboardingPage() {
   ];
 
   return (
-    <div 
-      className="min-h-screen flex flex-col bg-background relative selection:bg-electric/30"
-      onMouseMove={handleMouseMove}
-    >
-      <div className="cursor-glow" style={{ left: glowPos.x, top: glowPos.y }} />
+    <ImmersiveLayout>
       <Navbar />
       <div className="flex-1 flex justify-center py-24 px-4 relative z-10">
         <OnboardingWizard steps={steps} currentStep={stage}>
@@ -149,9 +94,10 @@ function OnboardingPage() {
         </OnboardingWizard>
       </div>
       <Footer />
-    </div>
+    </ImmersiveLayout>
   );
 }
+
 
 function RolePicker({ onPick }: { onPick: (r: string) => void }) {
   const roles = [
@@ -190,20 +136,11 @@ function RolePicker({ onPick }: { onPick: (r: string) => void }) {
 }
 
 function RoleCard({ role, onClick }: { role: any; onClick: () => void }) {
-  const { ref, position, handleMouseMove, handleMouseLeave, handleMouseEnter } = useMagnetic(15);
-  
   return (
-    <div 
-      ref={ref}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      onMouseEnter={handleMouseEnter}
-      style={{ transform: `translate(${position.x}px, ${position.y}px)` }}
-      className="transition-transform duration-300 ease-out"
-    >
+    <Magnetic strength={15}>
       <button
         onClick={onClick}
-        className="card-surface p-10 text-left hover:card-surface-hover group transition-all duration-500 relative overflow-hidden h-full"
+        className="card-surface p-10 text-left hover:card-surface-hover group transition-all duration-500 relative overflow-hidden h-full w-full"
       >
         <div 
           className="size-16 rounded-2xl bg-surface-elevated border border-border flex items-center justify-center text-3xl group-hover:scale-110 transition-transform duration-700 mb-8 shadow-soft"
@@ -218,9 +155,10 @@ function RoleCard({ role, onClick }: { role: any; onClick: () => void }) {
           <span className="text-electric text-3xl">→</span>
         </div>
       </button>
-    </div>
+    </Magnetic>
   );
 }
+
 
 function GoalsStep({ data, update, onContinue }: any) {
   const playTick = useAudioTick();

@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import { ScoreRing } from "@/routes/index";
+import { ScoreRing } from "@/components/ui/Immersive";
 
 export const Route = createFileRoute("/dashboard")({
   component: Dashboard,

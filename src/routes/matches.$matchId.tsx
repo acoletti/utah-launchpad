@@ -2,7 +2,7 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { matches } from "@/lib/mock-data";
-import { ScoreRing } from "./index";
+import { ScoreRing } from "@/components/ui/Immersive";
 
 export const Route = createFileRoute("/matches/$matchId")({
   component: MatchDetail,
