@@ -1,15 +1,15 @@
-@import "tailwindcss" source(none);
+@import "tailwindcss";
 @source "../src";
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+  --radius-2xl: 24px;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -37,59 +37,57 @@
   --color-bond: var(--bond);
   --color-signal: var(--signal);
 
-  --font-display: "Fraunces", ui-serif, Georgia, serif;
+  --font-display: "Outfit", "Inter", ui-sans-serif, system-ui;
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 
-  --shadow-glow: 0 0 60px -10px color-mix(in oklab, var(--electric) 50%, transparent);
-  --shadow-soft: 0 1px 0 0 color-mix(in oklab, var(--foreground) 6%, transparent), 0 8px 24px -12px color-mix(in oklab, #000 60%, transparent);
+  --shadow-glow: 0 0 40px -10px color-mix(in oklab, var(--electric) 40%, transparent);
+  --shadow-soft: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-premium: 0 8px 30px rgba(0, 0, 0, 0.12);
+  
+  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-spring: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 :root {
-  --radius: 0.75rem;
+  --radius: 12px;
 
-  /* Dark venture-grade palette: deep navy blacks, cool whites, electric cyan */
-  --background: oklch(0.16 0.02 250);
-  --foreground: oklch(0.97 0.01 250);
+  /* Venture-grade palette: Deep obsidian, cool graphite, electric accents */
+  --background: oklch(0.14 0.01 250);
+  --foreground: oklch(0.98 0.005 250);
 
-  --surface: oklch(0.20 0.022 252);
-  --surface-elevated: oklch(0.235 0.025 252);
+  --surface: oklch(0.18 0.015 252);
+  --surface-elevated: oklch(0.22 0.02 252);
 
-  --card: oklch(0.20 0.022 252);
-  --card-foreground: oklch(0.97 0.01 250);
-  --popover: oklch(0.22 0.024 252);
-  --popover-foreground: oklch(0.97 0.01 250);
+  --card: oklch(0.18 0.015 252);
+  --card-foreground: oklch(0.98 0.005 250);
+  --popover: oklch(0.20 0.02 252);
+  --popover-foreground: oklch(0.98 0.005 250);
 
-  --primary: oklch(0.97 0.01 250);
-  --primary-foreground: oklch(0.16 0.02 250);
+  --primary: oklch(0.98 0.005 250);
+  --primary-foreground: oklch(0.14 0.01 250);
 
-  --secondary: oklch(0.26 0.028 252);
-  --secondary-foreground: oklch(0.97 0.01 250);
+  --secondary: oklch(0.24 0.025 252);
+  --secondary-foreground: oklch(0.98 0.005 250);
 
-  --muted: oklch(0.24 0.022 252);
-  --muted-foreground: oklch(0.68 0.02 252);
+  --muted: oklch(0.22 0.015 252);
+  --muted-foreground: oklch(0.65 0.015 252);
 
-  --accent: oklch(0.28 0.03 252);
-  --accent-foreground: oklch(0.97 0.01 250);
+  --accent: oklch(0.26 0.03 252);
+  --accent-foreground: oklch(0.98 0.005 250);
 
-  --destructive: oklch(0.62 0.22 25);
+  --destructive: oklch(0.55 0.22 25);
   --destructive-foreground: oklch(0.98 0.01 25);
 
-  --border: oklch(0.30 0.025 252 / 60%);
-  --input: oklch(0.30 0.025 252);
-  --ring: oklch(0.78 0.16 195);
+  --border: oklch(0.28 0.02 252 / 40%);
+  --input: oklch(0.28 0.02 252);
+  --ring: oklch(0.85 0.14 195);
 
-  /* Signature accents */
-  --electric: oklch(0.82 0.16 195);          /* electric cyan — molecular bond */
-  --electric-foreground: oklch(0.16 0.02 250);
-  --bond: oklch(0.72 0.18 75);                /* warm amber — Utah desert */
-  --signal: oklch(0.70 0.20 145);             /* signal green — match strength */
-}
-
-.dark {
-  /* same — design is intrinsically dark */
-  --background: oklch(0.16 0.02 250);
-  --foreground: oklch(0.97 0.01 250);
+  /* Brand Accents */
+  --electric: oklch(0.85 0.14 195);
+  --electric-foreground: oklch(0.14 0.01 250);
+  --bond: oklch(0.75 0.16 75);
+  --signal: oklch(0.75 0.18 145);
 }
 
 @layer base {
@@ -98,75 +96,129 @@
     background: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
-    font-feature-settings: "ss01", "cv11";
+    font-feature-settings: "ss01", "cv11", "salt";
     -webkit-font-smoothing: antialiased;
+    scroll-behavior: smooth;
   }
-  h1, h2, h3, .font-display { font-family: var(--font-display); letter-spacing: -0.02em; }
+  h1, h2, h3, .font-display { 
+    font-family: var(--font-display); 
+    font-weight: 600;
+    letter-spacing: -0.025em; 
+  }
 }
 
 @utility container-x {
   width: 100%;
   margin-inline: auto;
   padding-inline: 1.5rem;
-  max-width: 80rem;
+  max-width: 85rem;
+}
+
+@utility glass {
+  background: color-mix(in oklab, var(--surface) 70%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid color-mix(in oklab, var(--foreground) 10%, transparent);
 }
 
 @utility grid-bg {
   background-image:
-    linear-gradient(to right, color-mix(in oklab, var(--foreground) 4%, transparent) 1px, transparent 1px),
-    linear-gradient(to bottom, color-mix(in oklab, var(--foreground) 4%, transparent) 1px, transparent 1px);
-  background-size: 56px 56px;
+    linear-gradient(to right, color-mix(in oklab, var(--foreground) 3%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in oklab, var(--foreground) 3%, transparent) 1px, transparent 1px);
+  background-size: 40px 40px;
 }
 
 @utility radial-spot {
   background:
-    radial-gradient(60% 50% at 50% 0%, color-mix(in oklab, var(--electric) 22%, transparent), transparent 70%),
-    radial-gradient(50% 40% at 80% 30%, color-mix(in oklab, var(--bond) 14%, transparent), transparent 70%);
+    radial-gradient(100% 100% at 50% 0%, color-mix(in oklab, var(--electric) 15%, transparent), transparent 70%),
+    radial-gradient(80% 80% at 100% 100%, color-mix(in oklab, var(--bond) 8%, transparent), transparent 70%);
 }
 
 @utility chip {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
-  padding: 0.25rem 0.625rem;
-  border-radius: 999px;
+  gap: 0.5rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 8px;
   border: 1px solid var(--color-border);
-  background: color-mix(in oklab, var(--surface-elevated) 60%, transparent);
-  font-size: 0.72rem;
-  letter-spacing: 0.02em;
+  background: var(--surface-elevated);
+  font-size: 0.75rem;
+  font-weight: 500;
   color: var(--color-muted-foreground);
-  font-family: var(--font-mono);
-  text-transform: uppercase;
+  transition: var(--transition-smooth);
 }
 
 @utility btn-primary {
-  display: inline-flex; align-items: center; gap: 0.5rem;
-  padding: 0.7rem 1.1rem;
+  display: inline-flex; 
+  align-items: center; 
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
   background: var(--color-electric);
   color: var(--color-electric-foreground);
-  border-radius: 0.55rem;
+  border-radius: 10px;
   font-weight: 600;
-  font-size: 0.92rem;
-  transition: transform .15s ease, box-shadow .25s ease, filter .2s ease;
+  font-size: 0.875rem;
+  transition: var(--transition-spring);
   box-shadow: var(--shadow-glow);
+  cursor: pointer;
+  border: none;
 }
-@utility btn-primary-hover { filter: brightness(1.05); transform: translateY(-1px); }
+@utility btn-primary-hover { 
+  transform: translateY(-2px) scale(1.02);
+  filter: brightness(1.1);
+  box-shadow: 0 10px 25px -5px color-mix(in oklab, var(--electric) 50%, transparent);
+}
+@utility btn-primary-active { transform: translateY(0) scale(0.98); }
 
 @utility btn-ghost {
-  display: inline-flex; align-items: center; gap: 0.5rem;
-  padding: 0.7rem 1.1rem;
+  display: inline-flex; 
+  align-items: center; 
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
   background: transparent;
   color: var(--color-foreground);
   border: 1px solid var(--color-border);
-  border-radius: 0.55rem;
+  border-radius: 10px;
   font-weight: 500;
-  font-size: 0.92rem;
-  transition: background .2s ease, border-color .2s ease;
+  font-size: 0.875rem;
+  transition: var(--transition-smooth);
+  cursor: pointer;
+}
+@utility btn-ghost-hover {
+  background: var(--surface-elevated);
+  border-color: var(--foreground);
 }
 
 @utility card-surface {
-  background: linear-gradient(180deg, color-mix(in oklab, var(--surface-elevated) 100%, transparent), color-mix(in oklab, var(--surface) 90%, transparent));
+  background: var(--surface);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius-lg);
+  transition: var(--transition-smooth);
+}
+@utility card-surface-hover {
+  border-color: color-mix(in oklab, var(--electric) 40%, transparent);
+  box-shadow: var(--shadow-premium);
+}
+
+@utility sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 0.875rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-muted-foreground);
+  transition: var(--transition-smooth);
+}
+@utility sidebar-item-active {
+  background: var(--surface-elevated);
+  color: var(--foreground);
   box-shadow: var(--shadow-soft);
+}
+@utility sidebar-item-hover {
+  color: var(--foreground);
+  background: color-mix(in oklab, var(--surface-elevated) 50%, transparent);
 }

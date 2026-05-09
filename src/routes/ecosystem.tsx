@@ -4,7 +4,7 @@ import { Footer } from "@/components/Footer";
 
 export const Route = createFileRoute("/ecosystem")({
   component: EcosystemPage,
-  head: () => ({ meta: [{ title: "Utah Ecosystem Map — LaunchHive" }] }),
+  head: () => ({ meta: [{ title: "Ecosystem Graph — LaunchHive" }] }),
 });
 
 type Node = { id: string; label: string; type: "uni" | "startup" | "talent" | "program"; x: number; y: number };
@@ -44,57 +44,90 @@ function colorFor(t: Node["type"]) {
 
 function EcosystemPage() {
   const find = (id: string) => nodes.find((n) => n.id === id)!;
+  
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-background">
       <Navbar />
-      <main className="container-x py-12 flex-1">
-        <div className="max-w-2xl">
-          <span className="chip">Ecosystem mapping · beta</span>
-          <h1 className="font-display text-5xl mt-4">Utah's deep-tech graph.</h1>
-          <p className="text-muted-foreground mt-3">Universities, programs, spinouts, and talent — and the bonds between them. Match weight increases with proximity in this graph.</p>
-        </div>
+      <main className="container-x py-16 flex-1 space-y-12">
+        <header className="max-w-3xl space-y-4">
+          <span className="chip bg-bond/10 text-bond border-bond/20">Ecosystem Mapping · Live</span>
+          <h1 className="text-5xl font-display leading-tight">Utah's Deep Tech Graph.</h1>
+          <p className="text-xl text-muted-foreground leading-relaxed">
+            The bonds between universities, funding programs, and talent. 
+            Proximity in this graph drives our weighted match scores.
+          </p>
+        </header>
 
-        <div className="mt-10 grid lg:grid-cols-[2fr_1fr] gap-6">
-          <div className="card-surface p-4 aspect-[4/3] relative overflow-hidden">
-            <div className="absolute inset-0 grid-bg opacity-40" />
-            <svg viewBox="0 0 100 100" className="absolute inset-0 size-full">
+        <div className="grid lg:grid-cols-[1fr_320px] gap-8">
+          <div className="card-surface p-0 aspect-video relative overflow-hidden group">
+            <div className="absolute inset-0 grid-bg opacity-20" />
+            <div className="absolute inset-0 bg-linear-to-t from-background/80 to-transparent pointer-events-none" />
+            
+            <svg viewBox="0 0 100 100" className="absolute inset-0 size-full transition-transform duration-1000 group-hover:scale-[1.02]">
               {edges.map(([a, b, w], i) => {
                 const A = find(a); const B = find(b);
-                return <line key={i} x1={A.x} y1={A.y} x2={B.x} y2={B.y} stroke="currentColor" className="text-electric" strokeOpacity={(w ?? 0.5) * 0.5 + 0.1} strokeWidth={(w ?? 0.5) * 0.4 + 0.15} />;
+                return (
+                  <line 
+                    key={i} 
+                    x1={A.x} y1={A.y} x2={B.x} y2={B.y} 
+                    stroke="var(--electric)" 
+                    strokeOpacity={(w ?? 0.5) * 0.4 + 0.1} 
+                    strokeWidth={(w ?? 0.5) * 0.3 + 0.1} 
+                  />
+                );
               })}
               {nodes.map((n) => (
-                <g key={n.id} transform={`translate(${n.x} ${n.y})`}>
-                  <circle r={n.type === "uni" ? 2.2 : n.type === "startup" ? 1.6 : 1.3} fill={colorFor(n.type)} opacity={0.95} />
-                  <circle r={n.type === "uni" ? 4.5 : 3} fill={colorFor(n.type)} opacity={0.15} />
+                <g key={n.id} transform={`translate(${n.x} ${n.y})`} className="cursor-pointer">
+                  <circle r={n.type === "uni" ? 2.5 : 1.8} fill={colorFor(n.type)} className="shadow-glow" />
+                  <circle r={n.type === "uni" ? 5 : 4} fill={colorFor(n.type)} opacity={0.1} className="animate-pulse" />
                 </g>
               ))}
             </svg>
+            
             {nodes.map((n) => (
-              <div key={n.id} className="absolute -translate-x-1/2 text-[10px] font-mono uppercase tracking-wider whitespace-nowrap pointer-events-none" style={{ left: `${n.x}%`, top: `calc(${n.y}% + 14px)`, color: colorFor(n.type) }}>{n.label}</div>
+              <div 
+                key={n.id} 
+                className="absolute -translate-x-1/2 text-[9px] font-mono uppercase tracking-widest whitespace-nowrap pointer-events-none select-none" 
+                style={{ left: `${n.x}%`, top: `calc(${n.y}% + 16px)`, color: colorFor(n.type) }}
+              >
+                {n.label}
+              </div>
             ))}
+            
+            <div className="absolute bottom-6 left-6 flex gap-6 px-6 py-3 glass rounded-xl">
+              <LegendItem c="var(--bond)" l="University" />
+              <LegendItem c="var(--electric)" l="Startup" />
+              <LegendItem c="var(--signal)" l="Talent" />
+              <LegendItem c="var(--muted-foreground)" l="Program" />
+            </div>
           </div>
 
-          <aside className="space-y-4">
-            <div className="card-surface p-6">
-              <h3 className="font-display text-lg">Legend</h3>
-              <div className="mt-4 space-y-2 text-sm">
-                <LegendItem c="var(--bond)" l="University" />
-                <LegendItem c="var(--electric)" l="Startup / spinout" />
-                <LegendItem c="var(--signal)" l="Talent" />
-                <LegendItem c="var(--muted-foreground)" l="Program (USTAR, SBIR, UIF)" />
-              </div>
+          <aside className="space-y-6">
+            <div className="card-surface p-6 space-y-4">
+              <h3 className="text-lg font-display">Graph Intelligence</h3>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Matches that share a common node in the Utah graph close 3.2× faster than cold matches. 
+                We use this distance to calculate "Ecosystem Fit."
+              </p>
             </div>
-            <div className="card-surface p-6">
-              <h3 className="font-display text-lg">Why this matters</h3>
-              <p className="text-sm text-muted-foreground mt-3 leading-relaxed">Utah is two degrees deep. Matches that share a path through this graph close 3.2× faster than cold matches. Ecosystem proximity is a first-class scoring dimension, not a vibe.</p>
-            </div>
-            <div className="card-surface p-6">
-              <h3 className="font-display text-lg">Coming soon</h3>
-              <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
-                <li>· Connection paths ("Maya → Eliza → Dr. Patel")</li>
-                <li>· Affinity-synced relationship scores</li>
-                <li>· Funding event timeline overlay</li>
+            
+            <div className="glass p-6 rounded-2xl space-y-4">
+              <h3 className="text-xs font-mono uppercase tracking-widest text-electric">Coming Soon</h3>
+              <ul className="space-y-3">
+                {["Connection Path Finder", "Affinity Integration", "Funding Timelines"].map(item => (
+                  <li key={item} className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <span className="size-1 rounded-full bg-border" />
+                    {item}
+                  </li>
+                ))}
               </ul>
+            </div>
+
+            <div className="card-surface p-6 bg-bond/5 border-bond/20">
+              <h3 className="text-xs font-mono uppercase tracking-widest text-bond mb-2">Analysis</h3>
+              <p className="text-[10px] text-bond/80 leading-relaxed italic">
+                "U of U's therapeutics cluster is currently the most interconnected node set in the ecosystem."
+              </p>
             </div>
           </aside>
         </div>
@@ -105,5 +138,10 @@ function EcosystemPage() {
 }
 
 function LegendItem({ c, l }: { c: string; l: string }) {
-  return <div className="flex items-center gap-3"><span className="size-2.5 rounded-full" style={{ background: c }} />{l}</div>;
+  return (
+    <div className="flex items-center gap-2">
+      <span className="size-2 rounded-full" style={{ background: c }} />
+      <span className="text-[10px] font-mono uppercase tracking-wider text-foreground/80">{l}</span>
+    </div>
+  );
 }

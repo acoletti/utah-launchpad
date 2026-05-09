@@ -15,15 +15,15 @@ export const Route = createFileRoute("/")({
 
 function Landing() {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-background">
       <Navbar />
       <Hero />
-      <Logos />
-      <Problem />
+      <WhoItHelps />
+      <ValueProps />
       <HowItWorks />
-      <ScenariosSection />
+      <FeaturedMatches />
       <UtahEdge />
-      <CTA />
+      <FinalCTA />
       <Footer />
     </div>
   );
@@ -31,27 +31,38 @@ function Landing() {
 
 function Hero() {
   return (
-    <section className="relative overflow-hidden">
-      <div className="absolute inset-0 grid-bg opacity-50" />
-      <div className="absolute inset-0 radial-spot" />
-      <div className="container-x relative pt-24 pb-28 md:pt-36 md:pb-40">
-        <div className="max-w-3xl">
-          <span className="chip"><span className="size-1.5 rounded-full bg-electric inline-block" /> Built for Utah's research corridor</span>
-          <h1 className="font-display text-5xl md:text-7xl mt-6 leading-[1.02]">
-            The bridge between <em className="text-electric not-italic">labs</em> and the operators who turn them into companies.
-          </h1>
-          <p className="mt-6 text-lg text-muted-foreground max-w-2xl leading-relaxed">
-            LaunchHive is AI-native commercialization infrastructure for Utah deep tech. We replace the LinkedIn sprawl and warm-intro lottery with explainable, ecosystem-aware matches between research spinouts and the talent that can ship them.
-          </p>
-          <div className="mt-9 flex flex-wrap gap-3">
-            <Link to="/onboarding" className="btn-primary hover:[filter:brightness(1.08)]">Start your profile →</Link>
-            <Link to="/matches" className="btn-ghost">See live matches</Link>
-          </div>
-          <div className="mt-12 grid grid-cols-3 gap-6 max-w-xl">
-            <Stat n="3" label="R1 universities" />
-            <Stat n="86%" label="avg match score" />
-            <Stat n="14d" label="median time to intro" />
-          </div>
+    <section className="relative overflow-hidden pt-20 pb-32">
+      <div className="absolute inset-0 grid-bg opacity-30" />
+      <div className="absolute inset-0 radial-spot opacity-60" />
+      
+      <div className="container-x relative z-10 text-center space-y-8">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-elevated border border-border text-[10px] font-mono uppercase tracking-[0.2em] text-electric animate-in fade-in slide-in-from-top-4 duration-1000">
+          <span className="size-2 rounded-full bg-electric animate-pulse" />
+          The Utah Deep Tech Graph
+        </div>
+        
+        <h1 className="text-6xl md:text-8xl font-display leading-[1.05] max-w-5xl mx-auto animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-100">
+          Commercializing <em className="text-electric not-italic italic-serif">research</em> with AI precision.
+        </h1>
+        
+        <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
+          LaunchHive matches Utah's most promising research spinouts with the specific operators and executives ready to lead them.
+        </p>
+        
+        <div className="flex flex-wrap items-center justify-center gap-4 pt-4 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300">
+          <Link to="/onboarding" className="btn-primary px-10 py-4 text-base hover:btn-primary-hover active:btn-primary-active">
+            Build Your Profile
+          </Link>
+          <Link to="/matches" className="btn-ghost px-10 py-4 text-base hover:btn-ghost-hover">
+            Explore Matches
+          </Link>
+        </div>
+
+        <div className="pt-20 grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto animate-in fade-in duration-1000 delay-500">
+          <Stat n="3" label="R1 Universities" />
+          <Stat n="86%" label="Avg Match Score" />
+          <Stat n="14d" label="Time to Intro" />
+          <Stat n="200+" label="Verified Operators" />
         </div>
       </div>
     </section>
@@ -60,47 +71,54 @@ function Hero() {
 
 function Stat({ n, label }: { n: string; label: string }) {
   return (
-    <div>
-      <div className="font-display text-3xl text-foreground">{n}</div>
-      <div className="text-xs uppercase tracking-wider text-muted-foreground font-mono mt-1">{label}</div>
+    <div className="space-y-1">
+      <div className="text-4xl font-display text-foreground">{n}</div>
+      <div className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">{label}</div>
     </div>
   );
 }
 
-function Logos() {
-  const labels = ["University of Utah", "BYU", "Utah State", "USTAR", "Silicon Slopes", "Utah Innovation Fund"];
+function WhoItHelps() {
+  const users = [
+    { title: "Researchers", desc: "Spin out your lab's breakthroughs with world-class CEO partners.", icon: "⌬" },
+    { title: "Executives", desc: "Find your next venture-scale seat in Utah's deepest tech corridor.", icon: "⌖" },
+    { title: "Students", desc: "Bridge the gap between academic research and commercial impact.", icon: "⌘" },
+    { title: "Advisors", desc: "Mentor the next generation of founders using your domain expertise.", icon: "⚗" },
+  ];
+
   return (
-    <section className="border-y border-border/60 py-8">
-      <div className="container-x flex flex-wrap items-center justify-between gap-6">
-        <span className="text-xs uppercase tracking-[0.2em] font-mono text-muted-foreground">Indexed across</span>
-        {labels.map((l) => (
-          <span key={l} className="font-display text-base text-muted-foreground/80">{l}</span>
-        ))}
+    <section className="py-24 border-t border-border/40">
+      <div className="container-x">
+        <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-4">
+          {users.map((u) => (
+            <div key={u.title} className="card-surface p-8 group hover:card-surface-hover">
+              <div className="size-12 rounded-xl bg-surface-elevated border border-border flex items-center justify-center text-2xl mb-6 group-hover:scale-110 group-hover:text-electric transition-all">
+                {u.icon}
+              </div>
+              <h3 className="text-xl font-display mb-2">{u.title}</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">{u.desc}</p>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );
 }
 
-function Problem() {
-  const cols = [
-    { title: "Job boards", body: "Optimized for transactions, not commercialization. A founding-CEO seat at a TRL-3 spinout doesn't render on Indeed.", tone: "muted" },
-    { title: "LinkedIn", body: "Connection-graph search. You find the right person only if you already half-knew them.", tone: "muted" },
-    { title: "Warm intros", body: "High signal, but capped by Eliza's calendar. Not a system.", tone: "muted" },
-    { title: "LaunchHive", body: "Reads spinout decks, lab pages, and operator profiles, then explains every match in plain English. Built on Utah's actual graph.", tone: "electric" },
+function ValueProps() {
+  const props = [
+    { title: "Explainable Matching", body: "We don't just give you a score. We explain the reasoning, the gaps, and the next steps for every match." },
+    { title: "Ecosystem Aware", body: "Our AI is grounded in the actual Utah graph — universities, TTOs, and state programs are first-class dimensions." },
+    { title: "Non-Technical UI", body: "Built for researchers and operators, not data scientists. Clear, approachable, and actionable." },
   ];
+
   return (
-    <section className="container-x py-24">
-      <div className="max-w-2xl">
-        <span className="chip">The problem</span>
-        <h2 className="font-display text-4xl md:text-5xl mt-5">Utah produces world-class research. The operator bridge is thin.</h2>
-        <p className="mt-4 text-muted-foreground">Existing tools weren't designed for deep tech, fractional roles, or the commercialization gap that Nucleus has been closing manually for years.</p>
-      </div>
-      <div className="grid md:grid-cols-4 gap-4 mt-12">
-        {cols.map((c) => (
-          <div key={c.title} className={`card-surface p-6 ${c.tone === "electric" ? "ring-1 ring-electric/40" : ""}`}>
-            <div className={`text-xs font-mono uppercase tracking-wider ${c.tone === "electric" ? "text-electric" : "text-muted-foreground"}`}>{c.tone === "electric" ? "Now" : "Today"}</div>
-            <h3 className="font-display text-xl mt-2">{c.title}</h3>
-            <p className="text-sm text-muted-foreground mt-3 leading-relaxed">{c.body}</p>
+    <section className="py-24 bg-surface/30">
+      <div className="container-x grid md:grid-cols-3 gap-12">
+        {props.map((p) => (
+          <div key={p.title} className="space-y-4">
+            <h3 className="text-2xl font-display">{p.title}</h3>
+            <p className="text-muted-foreground leading-relaxed">{p.body}</p>
           </div>
         ))}
       </div>
@@ -110,60 +128,108 @@ function Problem() {
 
 function HowItWorks() {
   const steps = [
-    { n: "01", title: "Drop a link, paste a resume, or talk to Gemini", body: "Onboarding is a 4-minute conversation, not a 28-field form. We extract structured profiles from LinkedIn URLs, lab pages, decks, or free text." },
-    { n: "02", title: "The Utah Eco Agent reasons over the ecosystem", body: "A RAG pipeline grounded in Utah-specific data — universities, programs, funding events, talent — enriches every match with context no general model has." },
-    { n: "03", title: "Hybrid matching: structured + semantic + reasoning", body: "Skill overlap, stage fit, risk tolerance, and ecosystem proximity feed a weighted score. Then Gemini explains the match, the gaps, and the next step." },
+    { n: "01", t: "Sync Your Experience", b: "Drop a LinkedIn URL or paste a deck. Our AI extracts your commercialization DNA instantly." },
+    { n: "02", t: "AI Reasoning", b: "The Utah Eco Agent cross-references your profile with live spinout needs across the state." },
+    { n: "03", t: "Direct Intros", b: "Review your matches, read the reasoning reports, and request a warm introduction with one click." },
   ];
+
   return (
-    <section className="container-x py-24 border-t border-border/60">
-      <div className="grid md:grid-cols-[1fr_2fr] gap-12">
-        <div>
-          <span className="chip">How it works</span>
-          <h2 className="font-display text-4xl md:text-5xl mt-5">Centralized AI, not agent swarm theater.</h2>
-          <p className="mt-4 text-muted-foreground">Gemini orchestrates onboarding, enrichment, matching, and explanation. One reasoning surface. Predictable, auditable, fast.</p>
+    <section className="py-32 border-y border-border/40">
+      <div className="container-x grid md:grid-cols-2 gap-20">
+        <div className="space-y-6">
+          <span className="chip text-electric border-electric/20 bg-electric/5">The Process</span>
+          <h2 className="text-5xl font-display">A 4-minute bridge to your next venture.</h2>
+          <p className="text-lg text-muted-foreground leading-relaxed">
+            We've replaced the warm-intro lottery with an auditable, ecosystem-aware matching surface.
+          </p>
         </div>
-        <ol className="space-y-3">
+        <div className="space-y-8">
           {steps.map((s) => (
-            <li key={s.n} className="card-surface p-6 flex gap-6">
-              <div className="font-mono text-electric text-sm pt-1">{s.n}</div>
-              <div>
-                <h3 className="font-display text-xl">{s.title}</h3>
-                <p className="text-sm text-muted-foreground mt-2 leading-relaxed">{s.body}</p>
+            <div key={s.n} className="flex gap-6 group">
+              <span className="text-4xl font-display text-muted-foreground group-hover:text-electric transition-colors">{s.n}</span>
+              <div className="space-y-2">
+                <h3 className="text-xl font-display">{s.t}</h3>
+                <p className="text-muted-foreground leading-relaxed">{s.b}</p>
               </div>
-            </li>
+            </div>
           ))}
-        </ol>
+        </div>
       </div>
     </section>
   );
 }
 
-function ScenariosSection() {
+function FeaturedMatches() {
   return (
-    <section className="container-x py-24 border-t border-border/60">
-      <div className="flex items-end justify-between flex-wrap gap-4">
-        <div className="max-w-xl">
-          <span className="chip">Real matches, mocked from real-world archetypes</span>
-          <h2 className="font-display text-4xl md:text-5xl mt-5">Three scenarios, three explanations.</h2>
+    <section className="py-24 container-x">
+      <div className="flex items-end justify-between gap-8 mb-12">
+        <div className="space-y-4">
+          <h2 className="text-4xl font-display">Live match scenarios.</h2>
+          <p className="text-muted-foreground max-w-xl">These represent the high-confidence pairings our system surfaces daily.</p>
         </div>
-        <Link to="/matches" className="btn-ghost">Open the match queue →</Link>
+        <Link to="/matches" className="btn-ghost px-6 py-2 text-xs">View Full Queue →</Link>
       </div>
-      <div className="grid md:grid-cols-3 gap-4 mt-10">
+
+      <div className="grid md:grid-cols-3 gap-6">
         {matches.map((m) => (
-          <Link key={m.id} to="/matches/$matchId" params={{ matchId: m.id }} className="card-surface p-6 group hover:border-electric/50 transition-colors">
-            <div className="flex items-center justify-between">
-              <span className="chip">{m.talent.archetype} → {m.startup.sector}</span>
+          <Link key={m.id} to="/matches/$matchId" params={{ matchId: m.id }} className="card-surface p-6 group hover:card-surface-hover">
+            <div className="flex items-center justify-between mb-6">
+              <span className="chip text-[9px]">{m.talent.archetype}</span>
               <ScoreRing score={m.score} />
             </div>
-            <h3 className="font-display text-2xl mt-5 group-hover:text-electric transition-colors">{m.talent.name}</h3>
-            <p className="text-sm text-muted-foreground">→ {m.startup.name}</p>
-            <p className="text-sm text-foreground/85 mt-4 leading-relaxed line-clamp-3">{m.reasons[0]}</p>
-            <div className="mt-5 pt-5 border-t border-border/60 flex items-center justify-between text-xs font-mono text-muted-foreground uppercase tracking-wider">
-              <span>{m.startup.origin}</span>
-              <span className="text-electric">View reasoning →</span>
+            <h3 className="text-2xl font-display mb-1 group-hover:text-electric transition-colors">{m.talent.name}</h3>
+            <div className="text-xs text-muted-foreground mb-4">↔ {m.startup.name}</div>
+            <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3 italic">"{m.reasons[0]}"</p>
+            <div className="mt-8 flex items-center justify-between">
+              <span className="text-[10px] font-mono text-muted-foreground uppercase">{m.startup.origin}</span>
+              <span className="text-electric text-[10px] font-mono uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">Read reasoning →</span>
             </div>
           </Link>
         ))}
+      </div>
+    </section>
+  );
+}
+
+function UtahEdge() {
+  return (
+    <section className="relative py-24 bg-surface/30 overflow-hidden">
+      <div className="absolute inset-0 grid-bg opacity-10" />
+      <div className="container-x relative text-center space-y-12">
+        <h2 className="text-4xl font-display">Grounded in Utah's Actual Graph.</h2>
+        <div className="grid sm:grid-cols-3 gap-12 text-left max-w-5xl mx-auto">
+          <div>
+            <h3 className="text-lg font-display mb-2">Triad of R1s</h3>
+            <p className="text-sm text-muted-foreground leading-relaxed">Matching across U of U, BYU, and USU's complementary research specialties.</p>
+          </div>
+          <div>
+            <h3 className="text-lg font-display mb-2">Program Aware</h3>
+            <p className="text-sm text-muted-foreground leading-relaxed">USTAR, SBIR/STTR, and Utah Innovation Fund are first-class match dimensions.</p>
+          </div>
+          <div>
+            <h3 className="text-lg font-display mb-2">Domain Specialization</h3>
+            <p className="text-sm text-muted-foreground leading-relaxed">Routing life-science operators to therapeutics, and aerospace talent to USU.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function FinalCTA() {
+  return (
+    <section className="py-32 container-x">
+      <div className="card-surface p-16 text-center space-y-8 relative overflow-hidden group">
+        <div className="absolute inset-0 radial-spot opacity-40 group-hover:opacity-60 transition-opacity" />
+        <h2 className="text-5xl font-display relative">Scale Utah's Deep Tech.</h2>
+        <p className="text-xl text-muted-foreground max-w-xl mx-auto relative leading-relaxed">
+          Four minutes to create your profile. A lifetime of impact in the ecosystem.
+        </p>
+        <div className="pt-4 relative">
+          <Link to="/onboarding" className="btn-primary px-12 py-4 text-lg">
+            Build Your Profile Now
+          </Link>
+        </div>
       </div>
     </section>
   );
@@ -181,51 +247,5 @@ export function ScoreRing({ score }: { score: number }) {
       </svg>
       <div className="absolute inset-0 flex items-center justify-center font-mono text-[11px] font-semibold">{score}</div>
     </div>
-  );
-}
-
-function UtahEdge() {
-  const items = [
-    { t: "Triad of R1s", b: "U of U, BYU, USU — complementary specialties. Matching across them, not just within one." },
-    { t: "High-trust graph", b: "Silicon Slopes is two degrees deep. We surface the connection, not just the contact." },
-    { t: "Program-aware", b: "USTAR, SBIR/STTR, Utah Innovation Fund are first-class match dimensions." },
-    { t: "Domain-to-institution", b: "Biotech operators routed to U of U spinouts. Aerospace to USU. Cyber to BYU. Defaults that respect specialization." },
-  ];
-  return (
-    <section className="relative border-t border-border/60">
-      <div className="absolute inset-0 grid-bg opacity-30" />
-      <div className="container-x relative py-24">
-        <div className="max-w-2xl">
-          <span className="chip"><span className="size-1.5 rounded-full bg-bond" /> Why Utah</span>
-          <h2 className="font-display text-4xl md:text-5xl mt-5">A national platform would never know any of this.</h2>
-        </div>
-        <div className="grid md:grid-cols-4 gap-4 mt-10">
-          {items.map((i) => (
-            <div key={i.t} className="card-surface p-6">
-              <h3 className="font-display text-lg">{i.t}</h3>
-              <p className="text-sm text-muted-foreground mt-2 leading-relaxed">{i.b}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function CTA() {
-  return (
-    <section className="container-x py-24">
-      <div className="card-surface p-12 md:p-16 text-center relative overflow-hidden">
-        <div className="absolute inset-0 radial-spot opacity-60" />
-        <div className="relative">
-          <h2 className="font-display text-4xl md:text-5xl">Stop being your own bottleneck.</h2>
-          <p className="mt-4 text-muted-foreground max-w-xl mx-auto">Whether you're a researcher with a patent or an operator between roles, you're four minutes away from a queue of matches built for Utah.</p>
-          <div className="mt-8 flex justify-center gap-3">
-            <Link to="/onboarding" className="btn-primary hover:[filter:brightness(1.08)]">Build your profile</Link>
-            <Link to="/how-it-works" className="btn-ghost">See the architecture</Link>
-          </div>
-        </div>
-      </div>
-    </section>
   );
 }

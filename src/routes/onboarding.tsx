@@ -2,64 +2,136 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { useState } from "react";
+import { OnboardingWizard } from "@/components/OnboardingWizard";
 
 export const Route = createFileRoute("/onboarding")({
-  component: Onboarding,
-  head: () => ({ meta: [{ title: "Onboarding — LaunchHive" }] }),
+  component: OnboardingPage,
+  head: () => ({ meta: [{ title: "Join the Ecosystem — LaunchHive" }] }),
 });
 
 type Step = { id: string; title: string };
 
-function Onboarding() {
-  const [role, setRole] = useState<"talent" | "startup" | null>(null);
+function OnboardingPage() {
+  const [userType, setUserType] = useState<string | null>(null);
   const [stage, setStage] = useState(0);
-  const [link, setLink] = useState("");
-  const [extracted, setExtracted] = useState(false);
+  const [formData, setFormData] = useState({
+    lookingFor: "",
+    experience: "",
+    industries: "",
+    startupStage: "",
+    availability: "",
+    roleType: "",
+    links: "",
+  });
 
-  if (!role) return <RolePicker onPick={setRole} />;
+  if (!userType) return <RolePicker onPick={setUserType} />;
 
-  const steps: Step[] = role === "talent"
-    ? [
-        { id: "import", title: "Import" },
-        { id: "verify", title: "Verify" },
-        { id: "preferences", title: "Preferences" },
-        { id: "review", title: "Review" },
-      ]
-    : [
-        { id: "import", title: "Import" },
-        { id: "stage", title: "Stage & needs" },
-        { id: "ecosystem", title: "Ecosystem" },
-        { id: "review", title: "Review" },
-      ];
+  const steps: Step[] = [
+    { id: "goals", title: "Commercial Goals" },
+    { id: "expertise", title: "Domain Expertise" },
+    { id: "logistics", title: "Fit & Logistics" },
+    { id: "review", title: "Review Profile" },
+  ];
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-background">
       <Navbar />
-      <main className="container-x py-12 flex-1">
-        <div className="max-w-3xl mx-auto">
-          <div className="flex items-center gap-2 text-sm font-mono uppercase tracking-wider text-muted-foreground mb-6">
-            {steps.map((s, i) => (
-              <span key={s.id} className="flex items-center gap-2">
-                <span className={`size-1.5 rounded-full ${i <= stage ? "bg-electric" : "bg-border"}`} />
-                <span className={i === stage ? "text-foreground" : ""}>{s.title}</span>
-                {i < steps.length - 1 && <span className="text-border">/</span>}
-              </span>
+      <div className="flex-1 flex justify-center py-16 px-4">
+        <OnboardingWizard steps={steps} currentStep={stage}>
+          <div className="space-y-8">
+            <header className="space-y-2">
+              <span className="chip bg-electric/10 text-electric border-electric/20 uppercase tracking-widest text-[10px]">Step {stage + 1} of {steps.length}</span>
+              <h1 className="text-4xl font-display text-foreground">
+                {stage === 0 && "What are your commercial goals?"}
+                {stage === 1 && "Tell us about your expertise."}
+                {stage === 2 && "Logistics and availability."}
+                {stage === 3 && "Confirm your ecosystem profile."}
+              </h1>
+            </header>
+
+            <main>
+              {stage === 0 && (
+                <GoalsStep
+                  data={formData}
+                  update={(d: any) => setFormData({ ...formData, ...d })}
+                  onContinue={() => setStage(1)}
+                />
+              )}
+              {stage === 1 && (
+                <ExpertiseStep
+                  data={formData}
+                  update={(d: any) => setFormData({ ...formData, ...d })}
+                  onBack={() => setStage(0)}
+                  onContinue={() => setStage(2)}
+                />
+              )}
+              {stage === 2 && (
+                <LogisticsStep
+                  data={formData}
+                  update={(d: any) => setFormData({ ...formData, ...d })}
+                  onBack={() => setStage(1)}
+                  onContinue={() => setStage(3)}
+                />
+              )}
+              {stage === 3 && (
+                <AIReviewStep
+                  data={formData}
+                  onBack={() => setStage(2)}
+                />
+              )}
+            </main>
+          </div>
+        </OnboardingWizard>
+      </div>
+      <Footer />
+    </div>
+  );
+}
+
+function RolePicker({ onPick }: { onPick: (r: string) => void }) {
+  const roles = [
+    { id: "researcher", title: "Researcher / Founder", desc: "Spinning out deep tech from a lab.", icon: "⌬", color: "var(--bond)" },
+    { id: "executive", title: "Executive / Operator", desc: "Scaling companies and commercializing.", icon: "⌖", color: "var(--electric)" },
+    { id: "student", title: "Student / Intern", desc: "Learning the ropes in the ecosystem.", icon: "⌘", color: "var(--signal)" },
+    { id: "advisor", title: "Advisor / Mentor", desc: "Guiding the next generation of founders.", icon: "⚗", color: "var(--foreground)" },
+    { id: "admin", title: "Ecosystem Administrator", desc: "Managing programs or TTOs.", icon: "⏣", color: "var(--muted-foreground)" },
+  ];
+
+  return (
+    <div className="min-h-screen flex flex-col bg-background">
+      <Navbar />
+      <main className="flex-1 flex flex-col items-center justify-center py-20 px-4 relative overflow-hidden">
+        <div className="absolute inset-0 radial-spot opacity-30" />
+        
+        <div className="w-full max-w-[800px] relative">
+          <div className="text-center mb-12 space-y-4">
+            <span className="chip bg-electric/10 text-electric border-electric/20 uppercase tracking-widest text-[10px]">Join LaunchHive</span>
+            <h1 className="text-6xl font-display leading-tight">Tell us who you are.</h1>
+            <p className="text-xl text-muted-foreground max-w-xl mx-auto">We'll tailor your LaunchHive experience to your specific goals and role in the Utah ecosystem.</p>
+          </div>
+
+          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
+            {roles.map((r) => (
+              <button
+                key={r.id}
+                onClick={() => onPick(r.id)}
+                className="card-surface p-8 text-left hover:card-surface-hover group transition-all duration-300 relative overflow-hidden"
+              >
+                <div 
+                  className="size-14 rounded-2xl bg-surface-elevated border border-border flex items-center justify-center text-3xl group-hover:scale-110 transition-transform duration-500 mb-6 shadow-soft"
+                  style={{ color: r.color }}
+                >
+                  {r.icon}
+                </div>
+                <h2 className="text-xl font-display mb-2 group-hover:text-electric transition-colors">{r.title}</h2>
+                <p className="text-sm text-muted-foreground leading-relaxed">{r.desc}</p>
+                
+                <div className="absolute bottom-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity translate-y-2 group-hover:translate-y-0 duration-300">
+                  <span className="text-electric text-2xl">→</span>
+                </div>
+              </button>
             ))}
           </div>
-
-          {stage === 0 && (
-            <ImportStep
-              role={role}
-              link={link}
-              setLink={setLink}
-              extracted={extracted}
-              onExtract={() => setExtracted(true)}
-              onContinue={() => setStage(1)}
-            />
-          )}
-          {stage === 1 && <VerifyStep role={role} onBack={() => setStage(0)} onContinue={() => setStage(2)} />}
-          {stage === 2 && <PreferencesStep role={role} onBack={() => setStage(1)} onContinue={() => setStage(3)} />}
-          {stage === 3 && <ReviewStep role={role} onBack={() => setStage(2)} />}
         </div>
       </main>
       <Footer />
@@ -67,252 +139,228 @@ function Onboarding() {
   );
 }
 
-function RolePicker({ onPick }: { onPick: (r: "talent" | "startup") => void }) {
+function GoalsStep({ data, update, onContinue }: any) {
   return (
-    <div className="min-h-screen flex flex-col">
-      <Navbar />
-      <main className="container-x py-20 flex-1">
-        <div className="max-w-3xl mx-auto text-center">
-          <span className="chip mx-auto">Welcome</span>
-          <h1 className="font-display text-5xl mt-5">Which side of the bridge are you on?</h1>
-          <p className="text-muted-foreground mt-4">Pick one. You can add the other later.</p>
-        </div>
-        <div className="grid md:grid-cols-2 gap-5 mt-14 max-w-4xl mx-auto">
-          <button onClick={() => onPick("talent")} className="card-surface p-8 text-left hover:border-electric/50 transition-colors group">
-            <div className="text-electric text-3xl">⌖</div>
-            <h2 className="font-display text-2xl mt-4 group-hover:text-electric transition-colors">I'm an operator, executive, student, or advisor</h2>
-            <p className="text-sm text-muted-foreground mt-3">You're looking to join, advise, mentor, or build something. We'll match you with Utah deep-tech opportunities that fit.</p>
-            <div className="mt-6 flex flex-wrap gap-2">
-              {["Executive", "Fractional", "Operator", "Student", "Advisor", "Mentor"].map((t) => <span key={t} className="chip">{t}</span>)}
-            </div>
-          </button>
-          <button onClick={() => onPick("startup")} className="card-surface p-8 text-left hover:border-electric/50 transition-colors group">
-            <div className="text-bond text-3xl">⌬</div>
-            <h2 className="font-display text-2xl mt-4 group-hover:text-bond transition-colors">I'm a researcher, founder, or TTO</h2>
-            <p className="text-sm text-muted-foreground mt-3">You have a spinout, a lab, or a license. We'll surface the operators, executives, and students who can move you forward.</p>
-            <div className="mt-6 flex flex-wrap gap-2">
-              {["U of U spinout", "BYU spinout", "USU spinout", "TTO", "Independent"].map((t) => <span key={t} className="chip">{t}</span>)}
-            </div>
-          </button>
-        </div>
-      </main>
-      <Footer />
-    </div>
-  );
-}
-
-function ImportStep({ role, link, setLink, extracted, onExtract, onContinue }: any) {
-  return (
-    <div className="card-surface p-8">
-      <h2 className="font-display text-3xl">Let's start fast.</h2>
-      <p className="text-muted-foreground mt-2">Paste any link. Gemini will extract a structured profile in seconds. No 28-field form.</p>
-
-      <div className="mt-8 space-y-3">
-        <label className="text-xs font-mono uppercase tracking-wider text-muted-foreground">{role === "talent" ? "LinkedIn URL, personal site, or resume link" : "Company URL, lab page, or pitch deck link"}</label>
-        <div className="flex gap-2">
-          <input
-            value={link}
-            onChange={(e) => setLink(e.target.value)}
-            placeholder={role === "talent" ? "https://linkedin.com/in/your-name" : "https://helixtherapeutics.com"}
-            className="flex-1 bg-input/40 border border-border rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-electric/60 focus:ring-2 focus:ring-electric/20 transition-colors font-mono"
+    <div className="card-surface p-10 space-y-8 animate-in fade-in slide-in-from-bottom-4">
+      <div className="space-y-6">
+        <div className="space-y-3">
+          <label className="text-xs font-mono uppercase tracking-widest text-muted-foreground">What are you looking for?</label>
+          <textarea
+            value={data.lookingFor}
+            onChange={(e) => update({ lookingFor: e.target.value })}
+            placeholder="e.g., A founding CEO seat at a biotech spinout, or a part-time mentor for my life-science startup."
+            className="w-full bg-surface-elevated border border-border rounded-xl px-5 py-4 text-base focus:outline-none focus:border-electric transition-all min-h-[140px] resize-none"
           />
-          <button onClick={onExtract} className="btn-primary hover:[filter:brightness(1.08)]" disabled={!link}>
-            Extract
-          </button>
         </div>
-        <p className="text-xs text-muted-foreground">Or <button className="underline text-electric">paste a resume</button> · <button className="underline text-electric">talk to Gemini</button> · <button className="underline text-electric">fill manually</button></p>
+        <div className="space-y-4">
+          <label className="text-xs font-mono uppercase tracking-widest text-muted-foreground">Preferred Engagement</label>
+          <div className="grid grid-cols-2 gap-3">
+            {["Full-time", "Fractional", "Advisory", "Board seat", "Internship", "Cofounder"].map((t) => (
+              <button
+                key={t}
+                onClick={() => update({ roleType: t })}
+                className={`px-4 py-4 text-sm border rounded-xl transition-all font-medium ${
+                  data.roleType === t 
+                    ? "bg-electric text-electric-foreground border-electric shadow-glow" 
+                    : "bg-surface-elevated border-border text-muted-foreground hover:border-foreground hover:text-foreground"
+                }`}
+              >
+                {t}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
 
-      {extracted && (
-        <div className="mt-8 border border-electric/30 bg-electric/5 rounded-xl p-6 space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-500">
-          <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-electric">
-            <span className="size-1.5 rounded-full bg-electric animate-pulse" /> Gemini extracted · 4 follow-ups
-          </div>
-          {role === "talent" ? <ExtractedTalent /> : <ExtractedStartup />}
-        </div>
-      )}
-
-      <div className="mt-8 flex justify-end">
-        <button onClick={onContinue} disabled={!extracted} className="btn-primary disabled:opacity-30 disabled:cursor-not-allowed hover:[filter:brightness(1.08)]">
-          Continue →
+      <div className="pt-4">
+        <button 
+          onClick={onContinue} 
+          disabled={!data.lookingFor || !data.roleType} 
+          className="btn-primary w-full py-4 text-base hover:btn-primary-hover active:btn-primary-active disabled:opacity-30"
+        >
+          Continue to Expertise
         </button>
       </div>
     </div>
   );
 }
 
-function ExtractedTalent() {
-  const fields = [
-    { k: "Headline", v: "VP Commercial · 2× FDA approvals · Seeking CEO seat" },
-    { k: "Skills", v: "FDA pathway · BD therapeutics · Series A storytelling" },
-    { k: "Domains", v: "Therapeutics · Gene therapy · Diagnostics" },
-    { k: "Stage preference", v: "Pre-seed · Seed (inferred from 'CEO seat #2')" },
-  ];
-  const followups = [
-    "What's your minimum equity stake to consider founding-CEO?",
-    "Open to relocation within Utah, or remote-only from current base?",
-    "Any indication areas you'd actively decline?",
-  ];
+function ExpertiseStep({ data, update, onBack, onContinue }: any) {
   return (
-    <>
-      <div className="grid sm:grid-cols-2 gap-3">
-        {fields.map((f) => (
-          <div key={f.k} className="bg-background/50 rounded-lg p-3">
-            <div className="text-[10px] uppercase font-mono tracking-wider text-muted-foreground">{f.k}</div>
-            <div className="text-sm mt-1">{f.v}</div>
-          </div>
-        ))}
-      </div>
-      <div className="pt-3 border-t border-electric/20">
-        <div className="text-xs font-mono uppercase tracking-wider text-electric mb-3">Quick follow-ups</div>
-        <div className="space-y-2">
-          {followups.map((f) => (
-            <div key={f} className="flex items-start gap-2 text-sm">
-              <span className="text-electric mt-0.5">→</span>
-              <span className="text-foreground/85">{f}</span>
-            </div>
-          ))}
+    <div className="card-surface p-10 space-y-8 animate-in fade-in slide-in-from-bottom-4">
+      <div className="space-y-6">
+        <div className="space-y-3">
+          <label className="text-xs font-mono uppercase tracking-widest text-muted-foreground">Key Experience</label>
+          <textarea
+            value={data.experience}
+            onChange={(e) => update({ experience: e.target.value })}
+            placeholder="e.g., 10 years in medical device commercialization, led two Series A rounds."
+            className="w-full bg-surface-elevated border border-border rounded-xl px-5 py-4 text-base focus:outline-none focus:border-electric transition-all min-h-[140px] resize-none"
+          />
+        </div>
+        <div className="space-y-3">
+          <label className="text-xs font-mono uppercase tracking-widest text-muted-foreground">Industry Focus</label>
+          <input
+            value={data.industries}
+            onChange={(e) => update({ industries: e.target.value })}
+            placeholder="e.g., Biotech, SaaS, Advanced Manufacturing"
+            className="w-full bg-surface-elevated border border-border rounded-xl px-5 py-4 text-base focus:outline-none focus:border-electric transition-all"
+          />
+          <p className="text-[10px] text-muted-foreground font-mono italic">Separate with commas</p>
         </div>
       </div>
-    </>
+
+      <div className="flex gap-4 pt-4">
+        <button onClick={onBack} className="btn-ghost flex-1 py-4 hover:btn-ghost-hover">Back</button>
+        <button 
+          onClick={onContinue} 
+          disabled={!data.experience} 
+          className="btn-primary flex-2 py-4 hover:btn-primary-hover active:btn-primary-active disabled:opacity-30"
+        >
+          Continue
+        </button>
+      </div>
+    </div>
   );
 }
 
-function ExtractedStartup() {
-  const fields = [
-    { k: "Sector", v: "Life Sciences — Therapeutics" },
-    { k: "Origin", v: "University of Utah · Moran Eye Center" },
-    { k: "TRL", v: "4 (pre-IND)" },
-    { k: "Funding stage", v: "Pre-seed · SBIR Phase I active" },
-  ];
-  const followups = [
-    "Confirm your immediate hiring needs (CEO, regulatory, scientific?).",
-    "Are you open to a fractional commercialization lead while you fundraise?",
-    "Should we tag this as USTAR-eligible for state-program matching?",
-  ];
+function LogisticsStep({ data, update, onBack, onContinue }: any) {
   return (
-    <>
-      <div className="grid sm:grid-cols-2 gap-3">
-        {fields.map((f) => (
-          <div key={f.k} className="bg-background/50 rounded-lg p-3">
-            <div className="text-[10px] uppercase font-mono tracking-wider text-muted-foreground">{f.k}</div>
-            <div className="text-sm mt-1">{f.v}</div>
+    <div className="card-surface p-10 space-y-8 animate-in fade-in slide-in-from-bottom-4">
+      <div className="grid sm:grid-cols-2 gap-8">
+        <div className="space-y-3">
+          <label className="text-xs font-mono uppercase tracking-widest text-muted-foreground">Startup Stage</label>
+          <div className="relative">
+            <select
+              value={data.startupStage}
+              onChange={(e) => update({ startupStage: e.target.value })}
+              className="w-full bg-surface-elevated border border-border rounded-xl px-5 py-4 text-base focus:outline-none focus:border-electric transition-all appearance-none"
+            >
+              <option value="">Select Stage</option>
+              <option value="Pre-seed">Pre-seed (Ideation)</option>
+              <option value="Seed">Seed (Spinout)</option>
+              <option value="Series A">Series A (Growth)</option>
+              <option value="Late Stage">Late Stage</option>
+            </select>
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground">↓</div>
           </div>
-        ))}
-      </div>
-      <div className="pt-3 border-t border-electric/20">
-        <div className="text-xs font-mono uppercase tracking-wider text-electric mb-3">Quick follow-ups</div>
-        <div className="space-y-2">
-          {followups.map((f) => (
-            <div key={f} className="flex items-start gap-2 text-sm">
-              <span className="text-electric mt-0.5">→</span>
-              <span className="text-foreground/85">{f}</span>
-            </div>
-          ))}
+        </div>
+        <div className="space-y-3">
+          <label className="text-xs font-mono uppercase tracking-widest text-muted-foreground">Weekly Availability</label>
+          <input
+            value={data.availability}
+            onChange={(e) => update({ availability: e.target.value })}
+            placeholder="e.g., 10-20 hrs"
+            className="w-full bg-surface-elevated border border-border rounded-xl px-5 py-4 text-base focus:outline-none focus:border-electric transition-all"
+          />
         </div>
       </div>
-    </>
-  );
-}
-
-function VerifyStep({ onBack, onContinue }: any) {
-  return (
-    <div className="card-surface p-8">
-      <h2 className="font-display text-3xl">Trust signals</h2>
-      <p className="text-muted-foreground mt-2">Verification weeds out spam, sales pitches, and tourists. Required for visibility.</p>
-      <div className="mt-8 grid gap-3">
-        {[
-          { k: "Email verified", v: "@u.utah.edu — verified", ok: true },
-          { k: "LinkedIn linked", v: "Verified profile · 480 connections", ok: true },
-          { k: "Ecosystem reference", v: "Add 1 reference from your Utah network (optional, boosts match weight)", ok: false },
-          { k: "ID match", v: "Optional — required only for board roles & equity grants", ok: false },
-        ].map((r) => (
-          <div key={r.k} className="flex items-center justify-between p-4 rounded-lg border border-border bg-surface-elevated/40">
-            <div>
-              <div className="text-sm font-medium">{r.k}</div>
-              <div className="text-xs text-muted-foreground mt-0.5">{r.v}</div>
-            </div>
-            {r.ok ? (
-              <span className="chip" style={{ color: "var(--signal)", borderColor: "color-mix(in oklab, var(--signal) 40%, transparent)" }}>✓ Verified</span>
-            ) : (
-              <button className="btn-ghost text-xs">Add</button>
-            )}
-          </div>
-        ))}
+      <div className="space-y-3">
+        <label className="text-xs font-mono uppercase tracking-widest text-muted-foreground">LinkedIn or Portfolio</label>
+        <input
+          value={data.links}
+          onChange={(e) => update({ links: e.target.value })}
+          placeholder="https://linkedin.com/in/..."
+          className="w-full bg-surface-elevated border border-border rounded-xl px-5 py-4 text-base font-mono focus:outline-none focus:border-electric transition-all"
+        />
       </div>
-      <Nav onBack={onBack} onContinue={onContinue} />
+
+      <div className="flex gap-4 pt-4">
+        <button onClick={onBack} className="btn-ghost flex-1 py-4 hover:btn-ghost-hover">Back</button>
+        <button 
+          onClick={onContinue} 
+          disabled={!data.startupStage || !data.availability} 
+          className="btn-primary flex-2 py-4 hover:btn-primary-hover active:btn-primary-active disabled:opacity-30"
+        >
+          Generate Profile
+        </button>
+      </div>
     </div>
   );
 }
 
-function PreferencesStep({ role, onBack, onContinue }: any) {
-  return (
-    <div className="card-surface p-8">
-      <h2 className="font-display text-3xl">{role === "talent" ? "Your fit dimensions" : "What you need"}</h2>
-      <p className="text-muted-foreground mt-2">Sliders feed the match score. Adjust any time.</p>
-      <div className="mt-8 space-y-7">
-        <SliderRow label="Stage preference" left="Idea" right="Series A+" value={28} />
-        <SliderRow label="Risk tolerance" left="Stable, paid" right="All-in equity" value={72} />
-        <SliderRow label="Availability" left="Mentor / advisory" right="Full-time" value={role === "talent" ? 90 : 60} />
-        <SliderRow label="Mission weight" left="Any sector" right="Mission-locked" value={65} />
-        <div>
-          <label className="text-xs font-mono uppercase tracking-wider text-muted-foreground">Mission statement (one sentence)</label>
-          <textarea className="mt-2 w-full bg-input/40 border border-border rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-electric/60 focus:ring-2 focus:ring-electric/20" rows={2} defaultValue="Bring Utah-born therapeutics to clinic, especially in rare disease." />
+function AIReviewStep({ data, onBack }: any) {
+  const [confirmed, setConfirmed] = useState(false);
+
+  if (confirmed) {
+    return (
+      <div className="card-surface p-16 text-center animate-in zoom-in-95 duration-700">
+        <div className="size-24 rounded-full bg-signal/10 text-signal grid place-items-center mx-auto text-4xl mb-8 border border-signal/20 shadow-glow">✓</div>
+        <h2 className="text-4xl font-display mb-4">You're matched.</h2>
+        <p className="text-lg text-muted-foreground max-w-sm mx-auto leading-relaxed">
+          Based on your profile, we've identified 3 university spinouts ready for commercialization partners.
+        </p>
+        <div className="mt-12">
+          <Link to="/dashboard" className="btn-primary px-12 py-4 text-base">
+            Go to Dashboard
+          </Link>
         </div>
       </div>
-      <Nav onBack={onBack} onContinue={onContinue} />
-    </div>
-  );
-}
+    );
+  }
 
-function SliderRow({ label, left, right, value }: { label: string; left: string; right: string; value: number }) {
   return (
-    <div>
-      <div className="flex items-center justify-between mb-2">
-        <div className="text-sm font-medium">{label}</div>
-        <div className="text-xs font-mono text-muted-foreground">{value}%</div>
-      </div>
-      <div className="relative h-2 rounded-full bg-input">
-        <div className="absolute inset-y-0 left-0 bg-electric rounded-full" style={{ width: `${value}%` }} />
-        <div className="absolute -top-1 size-4 rounded-full bg-foreground border-2 border-background" style={{ left: `calc(${value}% - 8px)` }} />
-      </div>
-      <div className="flex justify-between text-[10px] font-mono uppercase tracking-wider text-muted-foreground mt-2">
-        <span>{left}</span><span>{right}</span>
-      </div>
-    </div>
-  );
-}
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4">
+      <div className="card-surface p-10 relative overflow-hidden">
+        <div className="absolute top-0 right-0 p-6">
+          <span className="chip bg-electric/5 text-electric border-electric/20 text-[10px] font-mono">
+            <span className="size-1.5 rounded-full bg-electric animate-pulse mr-2" />
+            AI GENERATED
+          </span>
+        </div>
+        
+        <h2 className="text-3xl font-display mb-10">Review your profile.</h2>
 
-function ReviewStep({ role, onBack }: any) {
-  return (
-    <div className="card-surface p-8 text-center">
-      <div className="size-14 rounded-full bg-signal/20 text-signal grid place-items-center mx-auto text-2xl font-display">✓</div>
-      <h2 className="font-display text-3xl mt-5">Profile live.</h2>
-      <p className="text-muted-foreground mt-2">We're already running matches. First results below.</p>
-      <div className="mt-8 grid sm:grid-cols-3 gap-3 text-left">
-        {["3 high-confidence matches", "12 exploratory matches", "1 ecosystem warm intro available"].map((t, i) => (
-          <div key={t} className="bg-surface-elevated/50 rounded-lg p-4 text-sm">
-            <div className="text-electric text-xs font-mono uppercase tracking-wider">Live · {String(i + 1).padStart(2, "0")}</div>
-            <div className="mt-1">{t}</div>
+        <div className="grid lg:grid-cols-2 gap-12">
+          <div className="space-y-8">
+            <section className="space-y-2">
+              <h3 className="text-[10px] font-mono uppercase tracking-[0.2em] text-muted-foreground">Executive Summary</h3>
+              <p className="text-base leading-relaxed text-foreground/90 italic">
+                "Experienced commercial operator with a proven track record in deep-tech spinouts. Expert in navigating the TRL gap and building go-to-market strategies for university-born therapeutics."
+              </p>
+            </section>
+            <section className="space-y-3">
+              <h3 className="text-[10px] font-mono uppercase tracking-[0.2em] text-muted-foreground">Inferred Skills</h3>
+              <div className="flex flex-wrap gap-2">
+                {["FDA Pathway", "Series A Storytelling", "GTM Strategy", "Therapeutics", "IP Licensing"].map(s => (
+                  <span key={s} className="chip bg-surface-elevated text-[11px] font-medium text-foreground">{s}</span>
+                ))}
+              </div>
+            </section>
           </div>
-        ))}
-      </div>
-      <div className="mt-8 flex justify-center gap-3">
-        <button onClick={onBack} className="btn-ghost">← Back</button>
-        <Link to="/matches" className="btn-primary hover:[filter:brightness(1.08)]">Open match queue →</Link>
-      </div>
-      <p className="text-xs text-muted-foreground mt-6">Profile syncs to Affinity via webhook · referenceable in Squarespace embed widget</p>
-      {/* role var consumed for ts */}
-      <span className="hidden">{role}</span>
-    </div>
-  );
-}
+          
+          <div className="space-y-6">
+            <div className="glass p-6 rounded-2xl space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-mono text-muted-foreground uppercase">Confidence Score</span>
+                <span className="text-sm font-bold text-electric">85%</span>
+              </div>
+              <div className="h-1.5 bg-background rounded-full overflow-hidden">
+                <div className="h-full bg-electric rounded-full w-[85%]" />
+              </div>
+              <p className="text-[10px] text-muted-foreground italic">Based on R1 database alignment.</p>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div className="p-5 rounded-2xl bg-surface-elevated/40 border border-border">
+                <div className="text-[10px] font-mono uppercase text-muted-foreground mb-1">Availability</div>
+                <div className="text-sm font-medium">{data.availability}</div>
+              </div>
+              <div className="p-5 rounded-2xl bg-surface-elevated/40 border border-border">
+                <div className="text-[10px] font-mono uppercase text-muted-foreground mb-1">Risk Level</div>
+                <div className="text-sm font-medium text-signal">Balanced</div>
+              </div>
+            </div>
+          </div>
+        </div>
 
-function Nav({ onBack, onContinue }: any) {
-  return (
-    <div className="mt-10 flex justify-between">
-      <button onClick={onBack} className="btn-ghost">← Back</button>
-      <button onClick={onContinue} className="btn-primary hover:[filter:brightness(1.08)]">Continue →</button>
+        <div className="mt-12 pt-8 border-t border-border flex items-center justify-between">
+          <button onClick={onBack} className="text-sm text-muted-foreground hover:text-foreground transition-colors underline font-medium">Edit Details</button>
+          <button onClick={() => setConfirmed(true)} className="btn-primary px-12 py-4 shadow-glow">
+            Confirm & Finish
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
