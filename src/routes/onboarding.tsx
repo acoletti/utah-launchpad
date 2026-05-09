@@ -156,10 +156,11 @@ function OnboardingPage() {
 function RolePicker({ onPick }: { onPick: (r: string) => void }) {
   const roles = [
     { id: "researcher", title: "Researcher", desc: "You've made a discovery in the lab and you're ready to see it change the world.", icon: "⌬", color: "var(--bond)" },
-    { id: "executive", title: "Founder", desc: "You're a builder looking for your next big mission in deep tech.", icon: "⌖", color: "var(--electric)" },
-    { id: "student", title: "Learner", desc: "You're a student or intern ready to lend your energy to something real.", icon: "⌘", color: "var(--signal)" },
-    { id: "advisor", title: "Mentor", desc: "You've been there before and want to help guide the next generation.", icon: "⚗", color: "var(--foreground)" },
-    { id: "admin", title: "Connector", desc: "You manage programs and want to help make better matches.", icon: "⏣", color: "var(--muted-foreground)" },
+    { id: "founder", title: "Founder", desc: "You're a builder looking for your next big mission in deep tech.", icon: "⌖", color: "var(--electric)" },
+    { id: "mentor", title: "Mentor", desc: "You've been there before and want to help guide the next generation.", icon: "⚗", color: "var(--foreground)" },
+    { id: "investor", title: "Investor", desc: "You see the potential before the pitch deck is perfect and you want first access to Utah's best deep-tech bets.", icon: "◈", color: "var(--signal)" },
+    { id: "sme", title: "Subject-Matter Expert", desc: "You've spent years going deep in your field. Now you want to put that expertise to work where it actually matters.", icon: "⊕", color: "var(--bond)" },
+    { id: "service-provider", title: "Service Provider", desc: "You offer the legal, financial, creative, or operational firepower that startups need to scale — and you want to be in the room.", icon: "⏣", color: "var(--muted-foreground)" },
   ];
 
   return (
