@@ -421,6 +421,9 @@ function SMEIdentityStep({ data, update, onBack, onContinue }: { data: SMEData; 
         <SmeField label="Email">
           <input type="email" value={data.email} onChange={e => update({ email: e.target.value })} placeholder="maya@example.com" className={INPUT_CLS} />
         </SmeField>
+        <SmeField label="Street Address" optional>
+          <input value={data.address} onChange={e => update({ address: e.target.value })} placeholder="123 Innovation Dr" className={INPUT_CLS} />
+        </SmeField>
         <div className="grid sm:grid-cols-2 gap-6">
           <SmeField label="City">
             <input value={data.city} onChange={e => update({ city: e.target.value })} placeholder="Salt Lake City" className={INPUT_CLS} />
@@ -437,9 +440,6 @@ function SMEIdentityStep({ data, update, onBack, onContinue }: { data: SMEData; 
             <input value={data.country} onChange={e => update({ country: e.target.value })} placeholder="United States" className={INPUT_CLS} />
           </SmeField>
         </div>
-        <SmeField label="Street Address" optional>
-          <input value={data.address} onChange={e => update({ address: e.target.value })} placeholder="123 Innovation Dr" className={INPUT_CLS} />
-        </SmeField>
       </div>
       <div className="flex gap-6 pt-6">
         <button onClick={onBack} className="btn-ghost flex-1 py-5 hover:btn-ghost-hover">Back to roles</button>
