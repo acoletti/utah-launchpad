@@ -10,7 +10,13 @@ import {
 } from "@/components/ui/Immersive";
 import { useAudioTick } from "@/hooks/useHighFidelity";
 import { Slider } from "@/components/ui/slider";
-import { ENGAGEMENT_TYPES, INDUSTRIES, STARTUP_STAGES } from "@/lib/schemas/sme";
+import { 
+  SMEData, 
+  SME_DEFAULT, 
+  ENGAGEMENT_TYPES, 
+  INDUSTRIES, 
+  STARTUP_STAGES 
+} from "@/lib/schemas/sme";
 
 export const Route = createFileRoute("/onboarding")({
   component: OnboardingPage,
@@ -308,29 +314,8 @@ function LogisticsStep({ data, update, onBack, onContinue }: any) {
 
 // ─── Shared SME primitives ────────────────────────────────────────────────────
 
-type SMEData = {
-  firstName: string; lastName: string; email: string;
-  city: string; state: string; zip: string; country: string; address: string;
-  linkedinUrl: string; currentOrganization: string; currentTitle: string; professionalHistory: string;
-  industries: string[]; otherIndustry: string; skills: string;
-  engagementTypes: string[];
-  startupStageExpertise: string[]; technicalBusinessDepth: number;
-  researchIpHistory: boolean; researchIpDetail: string;
-  keyAchievement: string; monthlyAvailability: string;
-};
-
-const SME_DEFAULT: SMEData = {
-  firstName: "", lastName: "", email: "",
-  city: "", state: "", zip: "", country: "United States", address: "",
-  linkedinUrl: "", currentOrganization: "", currentTitle: "", professionalHistory: "",
-  industries: [], otherIndustry: "", skills: "",
-  engagementTypes: [],
-  startupStageExpertise: [], technicalBusinessDepth: 5,
-  researchIpHistory: false, researchIpDetail: "",
-  keyAchievement: "", monthlyAvailability: "",
-};
-
 const INPUT_CLS = "w-full bg-surface-elevated/50 border border-border rounded-2xl px-6 py-5 text-lg focus:outline-none focus:border-electric transition-all";
+
 const TEXTAREA_CLS = INPUT_CLS + " resize-none leading-relaxed";
 
 function SmeField({ label, children, optional }: { label: string; children: React.ReactNode; optional?: boolean }) {
