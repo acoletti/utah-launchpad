@@ -30,7 +30,7 @@ export type Talent = {
   id: string;
   name: string;
   headline: string;
-  archetype: "Executive" | "Fractional" | "Operator" | "Student" | "Advisor" | "Mentor";
+  archetype: "Executive" | "Fractional" | "Operator" | "Student" | "Mentor" | "SME" | "Investor" | "Service Provider";
   skills: string[];
   domains: string[];
   stagePreference: string[];
@@ -166,6 +166,51 @@ export const talent: Talent[] = [
     ecosystemSignals: ["Ex-Domo", "Ex-Lucid", "Silicon Slopes board"],
     avatarHue: 75,
   },
+  {
+    id: "dr-linda-walsh",
+    name: "Dr. Linda Walsh",
+    headline: "Retired biotech CEO. 30 yrs commercializing university IP. Now mentoring full-time.",
+    archetype: "Mentor",
+    skills: ["IP licensing", "Founder coaching", "Regulatory navigation", "Investor readiness"],
+    domains: ["Life Sciences", "Medical Devices", "Diagnostics"],
+    stagePreference: ["Pre-seed", "Seed"],
+    availability: "Mentor, ~5 hrs/wk per company",
+    riskTolerance: "Low",
+    compensation: "Volunteer / advisory equity only",
+    mission: "Pay forward 30 years of hard-won lessons to Utah's next generation of deep-tech founders.",
+    ecosystemSignals: ["U of U TVC mentor network", "USTAR advisory board", "Former Sorenson Bioscience CEO"],
+    avatarHue: 310,
+  },
+  {
+    id: "kai-okafor",
+    name: "Kai Okafor",
+    headline: "Aerospace systems engineer. 15 yrs DoD programs. Available for technical advisory.",
+    archetype: "SME",
+    skills: ["ITAR compliance", "Propulsion systems", "DoD procurement", "Systems integration"],
+    domains: ["Defense / Aerospace", "Advanced Manufacturing", "Energy"],
+    stagePreference: ["Pre-seed", "Seed", "Series A"],
+    availability: "Advisory, 4–8 hrs/wk",
+    riskTolerance: "Moderate",
+    compensation: "Advisory equity",
+    mission: "Help Utah aerospace founders avoid the DoD procurement pitfalls that derail most first-timers.",
+    ecosystemSignals: ["USU SDL alumni", "AFWERX reviewer", "L3Harris 15 yrs"],
+    avatarHue: 220,
+  },
+  {
+    id: "priya-nair",
+    name: "Priya Nair",
+    headline: "Angel investor. 22 Utah deep-tech bets. Focus: pre-seed life sciences and AI.",
+    archetype: "Investor",
+    skills: ["Deal sourcing", "Due diligence", "Cap table strategy", "Network introductions"],
+    domains: ["Life Sciences", "AI", "Cybersecurity"],
+    stagePreference: ["Pre-seed", "Seed"],
+    availability: "Active investor, 2–3 new deals/yr",
+    riskTolerance: "High",
+    compensation: "Equity (investor)",
+    mission: "Close the early-capital gap for Utah founders who can't wait for a coastal VC to discover them.",
+    ecosystemSignals: ["Utah Innovation Fund LP", "Silicon Slopes angels network", "Ex-Recursion board observer"],
+    avatarHue: 35,
+  },
 ];
 
 export const matches: Match[] = [
@@ -228,6 +273,66 @@ export const matches: Match[] = [
     nextSteps: [
       "Working session on Q1 hiring plan.",
       "Intro to Sentry's lead investor for advisory alignment.",
+    ],
+  },
+  {
+    id: "m-4",
+    score: 79,
+    confidence: "high",
+    startup: startups[0],
+    talent: talent[3], // Dr. Linda Walsh — Mentor
+    reasons: [
+      "30 years of biotech IP licensing maps precisely to Helix's pre-IND commercialization needs.",
+      "Prior U of U TVC network puts her one connection from Helix's PI.",
+      "Mentor archetype fits Helix's stage — they need wisdom, not another exec on the cap table.",
+      "Former Sorenson Bioscience CEO: rare disease precedent in Utah context.",
+    ],
+    gaps: [
+      "mRNA-specific delivery mechanisms are newer than her primary era — supplemental read recommended.",
+    ],
+    nextSteps: [
+      "Informal coffee with Helix co-founders — no agenda, just pattern-matching.",
+      "Share Helix's IND-enabling roadmap for Linda's regulatory read.",
+    ],
+  },
+  {
+    id: "m-5",
+    score: 75,
+    confidence: "medium",
+    startup: startups[2],
+    talent: talent[4], // Kai Okafor — SME
+    reasons: [
+      "15 years of DoD systems integration directly addresses Wasatch Orbital's ITAR compliance gap.",
+      "USU SDL alumni connection creates implicit trust with the founding team.",
+      "AFWERX reviewer experience: understands the funding language Wasatch is writing for.",
+      "Propulsion systems domain overlap is rare in Utah's operator pool.",
+    ],
+    gaps: [
+      "Solid-state propulsion is a narrower specialty — Kai's background is systems-level, not propellant chemistry.",
+    ],
+    nextSteps: [
+      "Technical advisory agreement scoping call.",
+      "Intro to Wasatch's AFWERX program officer via Kai's network.",
+    ],
+  },
+  {
+    id: "m-6",
+    score: 71,
+    confidence: "medium",
+    startup: startups[1],
+    talent: talent[5], // Priya Nair — Investor
+    reasons: [
+      "Pre-seed AI investment thesis aligns with Ridgeline's current raise.",
+      "Prior Recursion board observer role signals healthcare AI pattern recognition.",
+      "Utah Innovation Fund LP status gives her visibility into co-investment opportunities.",
+      "Checks average $250K–$500K — right size for Ridgeline's bridge round.",
+    ],
+    gaps: [
+      "On-device / edge inference is outside her core thesis — requires a technical sponsor to co-lead diligence.",
+    ],
+    nextSteps: [
+      "Send Ridgeline's seed deck and eval results.",
+      "Warm intro via Nucleus — Priya has expressed interest in regulated-AI bets.",
     ],
   },
 ];

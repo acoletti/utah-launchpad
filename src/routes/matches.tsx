@@ -12,7 +12,7 @@ export const Route = createFileRoute("/matches")({
 
 function MatchesPage() {
   const [filter, setFilter] = useState<string>("all");
-  const filters = ["all", "Executive", "Fractional", "Student"];
+  const filters = ["all", "Executive", "Fractional", "Operator", "Student", "Mentor", "SME", "Investor"];
   const filtered = filter === "all" ? matches : matches.filter((m) => m.talent.archetype === filter);
 
   return (
@@ -23,7 +23,7 @@ function MatchesPage() {
           <header className="flex flex-col md:flex-row md:items-end justify-between gap-8">
             <div className="space-y-4 max-w-2xl">
               <span className="chip bg-electric/10 text-electric border-electric/20 uppercase tracking-widest text-[10px]">Active Queue</span>
-              <h1 className="text-5xl font-display leading-tight">Three matches need your review.</h1>
+              <h1 className="text-5xl font-display leading-tight">Six matches need your review.</h1>
               <p className="text-xl text-muted-foreground leading-relaxed">
                 We've identified these high-confidence pairings based on current U of U spinout needs and your commercialization profile.
               </p>
