@@ -2,30 +2,33 @@ import { Link } from "@tanstack/react-router";
 
 export function Navbar() {
   return (
-    <nav className="sticky top-0 z-50 w-full glass border-b border-border/40 px-4 h-16 flex items-center justify-center">
+    <nav className="sticky top-0 z-50 w-full glass border-b border-border/40 px-4 h-20 flex items-center justify-center">
       <div className="container-x flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-3 group">
-          <div className="size-8 rounded-lg bg-electric flex items-center justify-center text-electric-foreground font-display text-xl group-hover:scale-110 transition-transform shadow-glow">
+        <Link to="/" className="flex items-center gap-4 group">
+          <div className="size-10 rounded-xl bg-electric flex items-center justify-center text-electric-foreground font-display text-2xl group-hover:scale-110 transition-all duration-700 shadow-glow">
             ⏣
           </div>
-          <span className="font-display text-xl tracking-tight">LaunchHive</span>
+          <div className="flex flex-col -space-y-1">
+            <span className="font-display text-2xl tracking-tighter">LaunchHive</span>
+            <span className="text-[9px] font-mono uppercase tracking-[0.3em] text-electric opacity-70">Utah Deep Tech</span>
+          </div>
         </Link>
         
-        <div className="hidden md:flex items-center gap-8">
-          <NavLink to="/dashboard">Dashboard</NavLink>
-          <NavLink to="/matches">Matches</NavLink>
-          <NavLink to="/ecosystem">Ecosystem</NavLink>
-          <NavLink to="/resources">Resources</NavLink>
+        <div className="hidden md:flex items-center gap-10">
+          <NavLink to="/dashboard">Your Space</NavLink>
+          <NavLink to="/matches">Discover</NavLink>
+          <NavLink to="/ecosystem">The Map</NavLink>
+          <NavLink to="/resources">Library</NavLink>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-6">
           <Link 
             to="/onboarding" 
-            className="btn-primary py-1.5 px-4 text-xs font-medium hover:btn-primary-hover active:btn-primary-active shadow-none"
+            className="text-sm font-display font-medium text-electric hover:text-foreground transition-colors"
           >
-            Create Profile
+            Join the community
           </Link>
-          <div className="size-8 rounded-full bg-surface-elevated border border-border flex items-center justify-center text-xs font-mono cursor-pointer hover:border-electric transition-colors">
+          <div className="size-10 rounded-2xl bg-surface-elevated border border-border flex items-center justify-center text-sm font-display cursor-pointer hover:border-electric transition-all duration-500 shadow-soft">
             MC
           </div>
         </div>
@@ -38,10 +41,10 @@ function NavLink({ to, children }: { to: string; children: React.ReactNode }) {
   return (
     <Link 
       to={to} 
-      className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors relative group"
+      className="text-sm font-display font-medium text-muted-foreground hover:text-foreground transition-all relative group py-2"
     >
       {children}
-      <span className="absolute -bottom-1 left-0 w-0 h-px bg-electric transition-all group-hover:w-full" />
+      <span className="absolute -bottom-1 left-0 w-0 h-px bg-electric transition-all duration-500 group-hover:w-full" />
     </Link>
   );
 }
