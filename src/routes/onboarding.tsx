@@ -9,6 +9,14 @@ import {
   ImmersiveLayout 
 } from "@/components/ui/Immersive";
 import { useAudioTick } from "@/hooks/useHighFidelity";
+import { Slider } from "@/components/ui/slider";
+import { 
+  SMEData, 
+  SME_DEFAULT, 
+  ENGAGEMENT_TYPES, 
+  INDUSTRIES, 
+  STARTUP_STAGES 
+} from "@/lib/schemas/sme";
 
 export const Route = createFileRoute("/onboarding")({
   component: OnboardingPage,
@@ -33,6 +41,7 @@ function OnboardingPage() {
   });
 
   if (!userType) return <RolePicker onPick={setUserType} />;
+  if (userType === "sme") return <SMEOnboardingFlow onBack={() => setUserType(null)} />;
 
   const steps: Step[] = [
     { id: "goals", title: "What's next for you?" },
@@ -302,6 +311,466 @@ function LogisticsStep({ data, update, onBack, onContinue }: any) {
     </div>
   );
 }
+
+// ─── Shared SME primitives ────────────────────────────────────────────────────
+
+const INPUT_CLS = "w-full bg-surface-elevated/50 border border-border rounded-2xl px-6 py-5 text-lg focus:outline-none focus:border-electric transition-all";
+
+const TEXTAREA_CLS = INPUT_CLS + " resize-none leading-relaxed";
+
+function SmeField({ label, children, optional }: { label: string; children: React.ReactNode; optional?: boolean }) {
+  return (
+    <div className="space-y-3">
+      <label className="text-xs font-mono uppercase tracking-[0.2em] text-muted-foreground">
+        {label}{optional && <span className="ml-2 text-muted-foreground/40 normal-case tracking-normal not-uppercase">(optional)</span>}
+      </label>
+      {children}
+    </div>
+  );
+}
+
+function MultiSelect({ options, selected, onChange }: { options: readonly string[]; selected: string[]; onChange: (v: string[]) => void }) {
+  const toggle = (opt: string) =>
+    onChange(selected.includes(opt) ? selected.filter(x => x !== opt) : [...selected, opt]);
+  return (
+    <div className="flex flex-wrap gap-3">
+      {options.map(opt => (
+        <button key={opt} type="button" onClick={() => toggle(opt)}
+          className={`px-5 py-3 text-sm border rounded-2xl transition-all font-display ${
+            selected.includes(opt)
+              ? "bg-electric text-electric-foreground border-electric shadow-glow"
+              : "bg-surface-elevated/40 border-border text-muted-foreground hover:border-foreground hover:text-foreground"
+          }`}
+        >{opt}</button>
+      ))}
+    </div>
+  );
+}
+
+// ─── SME flow container ───────────────────────────────────────────────────────
+
+function SMEOnboardingFlow({ onBack }: { onBack: () => void }) {
+  const [stage, setStage] = useState(0);
+  const [data, setData] = useState<SMEData>(SME_DEFAULT);
+  const update = (d: Partial<SMEData>) => setData(prev => ({ ...prev, ...d }));
+
+  const steps = [
+    { id: "identity",   title: "Your identity"        },
+    { id: "foundation", title: "Your foundation"      },
+    { id: "domain",     title: "Your domain"          },
+    { id: "engagement", title: "How you engage"       },
+    { id: "expertise",  title: "Your expertise"       },
+    { id: "impact",     title: "Research & impact"    },
+    { id: "review",     title: "How's this look?"     },
+  ];
+
+  const headings = [
+    "Tell us who you are.",
+    "Your professional foundation.",
+    "The domains you know best.",
+    "How do you like to engage?",
+    "Where do you add the most value?",
+    "Your research background and biggest impact.",
+    "How's this look?",
+  ];
+
+  return (
+    <div className="min-h-screen flex flex-col bg-background">
+      <Navbar />
+      <div className="flex-1 flex justify-center py-24 px-4">
+        <OnboardingWizard steps={steps} currentStep={stage}>
+          <div className="space-y-12">
+            <header className="space-y-4">
+              <span className="chip bg-electric/10 text-electric border-electric/20 uppercase tracking-[0.2em] text-[10px] py-1 px-3">
+                {stage === 6 ? "The final check" : `Part ${stage + 1} of ${steps.length}`}
+              </span>
+              <h1 className="text-5xl font-display text-foreground leading-tight">{headings[stage]}</h1>
+            </header>
+            <main>
+              {stage === 0 && <SMEIdentityStep   data={data} update={update} onBack={onBack}           onContinue={() => setStage(1)} />}
+              {stage === 1 && <SMEFoundationStep data={data} update={update} onBack={() => setStage(0)} onContinue={() => setStage(2)} />}
+              {stage === 2 && <SMEDomainStep     data={data} update={update} onBack={() => setStage(1)} onContinue={() => setStage(3)} />}
+              {stage === 3 && <SMEEngagementStep data={data} update={update} onBack={() => setStage(2)} onContinue={() => setStage(4)} />}
+              {stage === 4 && <SMEExpertiseStep  data={data} update={update} onBack={() => setStage(3)} onContinue={() => setStage(5)} />}
+              {stage === 5 && <SMEImpactStep     data={data} update={update} onBack={() => setStage(4)} onContinue={() => setStage(6)} />}
+              {stage === 6 && <SMEReviewStep     data={data} onBack={() => setStage(5)} />}
+            </main>
+          </div>
+        </OnboardingWizard>
+      </div>
+      <Footer />
+    </div>
+  );
+}
+
+// ─── Step 1: Identity ─────────────────────────────────────────────────────────
+
+function SMEIdentityStep({ data, update, onBack, onContinue }: { data: SMEData; update: (d: Partial<SMEData>) => void; onBack: () => void; onContinue: () => void }) {
+  const can = data.firstName && data.lastName && data.email && data.city && data.state && data.zip;
+  return (
+    <div className="card-surface p-12 space-y-10 animate-in fade-in slide-in-from-bottom-6 duration-700">
+      <div className="space-y-7">
+        <div className="grid sm:grid-cols-2 gap-6">
+          <SmeField label="First Name">
+            <input value={data.firstName} onChange={e => update({ firstName: e.target.value })} placeholder="Maya" className={INPUT_CLS} />
+          </SmeField>
+          <SmeField label="Last Name">
+            <input value={data.lastName} onChange={e => update({ lastName: e.target.value })} placeholder="Chen" className={INPUT_CLS} />
+          </SmeField>
+        </div>
+        <SmeField label="Email">
+          <input type="email" value={data.email} onChange={e => update({ email: e.target.value })} placeholder="maya@example.com" className={INPUT_CLS} />
+        </SmeField>
+        <div className="grid sm:grid-cols-2 gap-6">
+          <SmeField label="City">
+            <input value={data.city} onChange={e => update({ city: e.target.value })} placeholder="Salt Lake City" className={INPUT_CLS} />
+          </SmeField>
+          <SmeField label="State">
+            <input value={data.state} onChange={e => update({ state: e.target.value })} placeholder="UT" className={INPUT_CLS} />
+          </SmeField>
+        </div>
+        <div className="grid sm:grid-cols-2 gap-6">
+          <SmeField label="ZIP Code">
+            <input value={data.zip} onChange={e => update({ zip: e.target.value })} placeholder="84101" className={INPUT_CLS} />
+          </SmeField>
+          <SmeField label="Country">
+            <input value={data.country} onChange={e => update({ country: e.target.value })} placeholder="United States" className={INPUT_CLS} />
+          </SmeField>
+        </div>
+        <SmeField label="Street Address" optional>
+          <input value={data.address} onChange={e => update({ address: e.target.value })} placeholder="123 Innovation Dr" className={INPUT_CLS} />
+        </SmeField>
+      </div>
+      <div className="flex gap-6 pt-6">
+        <button onClick={onBack} className="btn-ghost flex-1 py-5 hover:btn-ghost-hover">Back to roles</button>
+        <button onClick={onContinue} disabled={!can} className="btn-primary flex-2 py-5 text-lg hover:btn-primary-hover active:btn-primary-active disabled:opacity-20">
+          That's me →
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ─── Step 2: Professional foundation ─────────────────────────────────────────
+
+function SMEFoundationStep({ data, update, onBack, onContinue }: { data: SMEData; update: (d: Partial<SMEData>) => void; onBack: () => void; onContinue: () => void }) {
+  const can = data.currentOrganization && data.currentTitle;
+  return (
+    <div className="card-surface p-12 space-y-10 animate-in fade-in slide-in-from-bottom-6 duration-700">
+      <div className="space-y-7">
+        <SmeField label="LinkedIn URL" optional>
+          <input value={data.linkedinUrl} onChange={e => update({ linkedinUrl: e.target.value })} placeholder="https://linkedin.com/in/yourname" className={INPUT_CLS + " font-mono"} />
+        </SmeField>
+        <div className="grid sm:grid-cols-2 gap-6">
+          <SmeField label="Current Organization">
+            <input value={data.currentOrganization} onChange={e => update({ currentOrganization: e.target.value })} placeholder="University of Utah" className={INPUT_CLS} />
+          </SmeField>
+          <SmeField label="Current Title">
+            <input value={data.currentTitle} onChange={e => update({ currentTitle: e.target.value })} placeholder="Professor of Biomedical Engineering" className={INPUT_CLS} />
+          </SmeField>
+        </div>
+        <SmeField label="Professional History" optional>
+          <textarea
+            value={data.professionalHistory}
+            onChange={e => update({ professionalHistory: e.target.value })}
+            placeholder="Walk us through your career. Where have you been, what have you built, and what roles are you most proud of? Don't worry about formatting — just tell the story."
+            className={TEXTAREA_CLS + " min-h-[160px]"}
+          />
+        </SmeField>
+      </div>
+      <div className="flex gap-6 pt-6">
+        <button onClick={onBack} className="btn-ghost flex-1 py-5 hover:btn-ghost-hover">Back a step</button>
+        <button onClick={onContinue} disabled={!can} className="btn-primary flex-2 py-5 text-lg hover:btn-primary-hover active:btn-primary-active disabled:opacity-20">
+          Let's talk domains →
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ─── Step 3: Domain + Skills ──────────────────────────────────────────────────
+
+function SMEDomainStep({ data, update, onBack, onContinue }: { data: SMEData; update: (d: Partial<SMEData>) => void; onBack: () => void; onContinue: () => void }) {
+  const can = data.industries.length > 0;
+  return (
+    <div className="card-surface p-12 space-y-10 animate-in fade-in slide-in-from-bottom-6 duration-700">
+      <div className="space-y-8">
+        <SmeField label="Which industries do you know best? Select all that apply.">
+          <MultiSelect options={INDUSTRIES} selected={data.industries} onChange={v => update({ industries: v })} />
+          {data.industries.includes("Other") && (
+            <input
+              value={data.otherIndustry}
+              onChange={e => update({ otherIndustry: e.target.value })}
+              placeholder="Describe your industry..."
+              className={INPUT_CLS + " mt-4"}
+            />
+          )}
+        </SmeField>
+        <SmeField label="Any additional skills or expertise?" optional>
+          <textarea
+            value={data.skills}
+            onChange={e => update({ skills: e.target.value })}
+            placeholder="e.g., systems architecture, FDA regulatory pathways, SBIR writing, materials characterization..."
+            className={TEXTAREA_CLS + " min-h-[120px]"}
+          />
+        </SmeField>
+      </div>
+      <div className="flex gap-6 pt-6">
+        <button onClick={onBack} className="btn-ghost flex-1 py-5 hover:btn-ghost-hover">Back a step</button>
+        <button onClick={onContinue} disabled={!can} className="btn-primary flex-2 py-5 text-lg hover:btn-primary-hover active:btn-primary-active disabled:opacity-20">
+          Now let's talk engagement →
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ─── Step 4: Engagement types ─────────────────────────────────────────────────
+
+function SMEEngagementStep({ data, update, onBack, onContinue }: { data: SMEData; update: (d: Partial<SMEData>) => void; onBack: () => void; onContinue: () => void }) {
+  const can = data.engagementTypes.length > 0;
+  return (
+    <div className="card-surface p-12 space-y-10 animate-in fade-in slide-in-from-bottom-6 duration-700">
+      <div className="space-y-8">
+        <SmeField label="How do you want to work with startups? Select all that apply.">
+          <MultiSelect options={ENGAGEMENT_TYPES} selected={data.engagementTypes} onChange={v => update({ engagementTypes: v })} />
+        </SmeField>
+        <p className="text-sm text-muted-foreground italic px-1 leading-relaxed">
+          Advisory board roles look different from hands-on technical consulting — we'll make sure the fit is right before we make any introduction.
+        </p>
+      </div>
+      <div className="flex gap-6 pt-6">
+        <button onClick={onBack} className="btn-ghost flex-1 py-5 hover:btn-ghost-hover">Back a step</button>
+        <button onClick={onContinue} disabled={!can} className="btn-primary flex-2 py-5 text-lg hover:btn-primary-hover active:btn-primary-active disabled:opacity-20">
+          Almost there →
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ─── Step 5: Stage expertise + depth slider ───────────────────────────────────
+
+function SMEExpertiseStep({ data, update, onBack, onContinue }: { data: SMEData; update: (d: Partial<SMEData>) => void; onBack: () => void; onContinue: () => void }) {
+  const can = data.startupStageExpertise.length > 0;
+  const depth = data.technicalBusinessDepth;
+  const depthLabel = depth <= 2 ? "Pure Business / GTM" : depth <= 4 ? "Business-leaning" : depth <= 6 ? "Balanced" : depth <= 8 ? "Technical-leaning" : "Deep Technical / R&D";
+  return (
+    <div className="card-surface p-12 space-y-10 animate-in fade-in slide-in-from-bottom-6 duration-700">
+      <div className="space-y-10">
+        <SmeField label="Which startup stages have you worked with? Select all that apply.">
+          <MultiSelect options={STARTUP_STAGES} selected={data.startupStageExpertise} onChange={v => update({ startupStageExpertise: v })} />
+        </SmeField>
+        <div className="space-y-5">
+          <label className="text-xs font-mono uppercase tracking-[0.2em] text-muted-foreground">Where do you sit on the spectrum?</label>
+          <Slider
+            value={[depth]}
+            onValueChange={([v]) => update({ technicalBusinessDepth: v })}
+            min={1} max={10} step={1}
+          />
+          <div className="flex justify-between text-[11px] font-mono text-muted-foreground">
+            <span>1 — Business / GTM</span>
+            <span>10 — Deep Technical / R&D</span>
+          </div>
+          <div className="text-center pt-1">
+            <span className="chip bg-electric/10 text-electric border-electric/20 font-mono text-sm px-6 py-2">
+              {depthLabel} — {depth}/10
+            </span>
+          </div>
+        </div>
+      </div>
+      <div className="flex gap-6 pt-6">
+        <button onClick={onBack} className="btn-ghost flex-1 py-5 hover:btn-ghost-hover">Back a step</button>
+        <button onClick={onContinue} disabled={!can} className="btn-primary flex-2 py-5 text-lg hover:btn-primary-hover active:btn-primary-active disabled:opacity-20">
+          One more section →
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ─── Step 6: Research, key achievement, capacity ──────────────────────────────
+
+function SMEImpactStep({ data, update, onBack, onContinue }: { data: SMEData; update: (d: Partial<SMEData>) => void; onBack: () => void; onContinue: () => void }) {
+  const can = data.keyAchievement.length >= 10 && Number(data.monthlyAvailability) >= 1;
+  return (
+    <div className="card-surface p-12 space-y-10 animate-in fade-in slide-in-from-bottom-6 duration-700">
+      <div className="space-y-8">
+        <div className="space-y-4">
+          <label className="text-xs font-mono uppercase tracking-[0.2em] text-muted-foreground">
+            Have you authored patents, papers, or led tech transfer?
+          </label>
+          <div className="flex gap-4">
+            {([{ v: true, label: "Yes — I have research or IP history" }, { v: false, label: "No, and that's fine" }] as const).map(({ v, label }) => (
+              <button key={String(v)} type="button"
+                onClick={() => update({ researchIpHistory: v, researchIpDetail: v ? data.researchIpDetail : "" })}
+                className={`flex-1 px-6 py-5 text-sm border rounded-2xl transition-all font-display text-left ${
+                  data.researchIpHistory === v
+                    ? "bg-electric text-electric-foreground border-electric shadow-glow"
+                    : "bg-surface-elevated/40 border-border text-muted-foreground hover:border-foreground hover:text-foreground"
+                }`}
+              >{label}</button>
+            ))}
+          </div>
+          {data.researchIpHistory && (
+            <textarea
+              value={data.researchIpDetail}
+              onChange={e => update({ researchIpDetail: e.target.value })}
+              placeholder="Tell us more — patents filed, publications, tech transfer deals, or university licensing experience."
+              className={TEXTAREA_CLS + " min-h-[120px] mt-2"}
+            />
+          )}
+        </div>
+        <SmeField label="What's the biggest impact you've made in your career? Be specific.">
+          <textarea
+            value={data.keyAchievement}
+            onChange={e => update({ keyAchievement: e.target.value })}
+            placeholder="Describe a moment where your expertise moved the needle — a product you launched, a company you helped scale, a technical challenge you unlocked."
+            className={TEXTAREA_CLS + " min-h-[160px]"}
+          />
+        </SmeField>
+        <SmeField label="Hours per month you can commit">
+          <input
+            type="number" min={1}
+            value={data.monthlyAvailability}
+            onChange={e => update({ monthlyAvailability: e.target.value })}
+            placeholder="e.g., 10"
+            className={INPUT_CLS}
+          />
+          <p className="text-[11px] text-muted-foreground font-mono italic px-2 mt-2">
+            This sets expectations for the startups we match you with.
+          </p>
+        </SmeField>
+      </div>
+      <div className="flex gap-6 pt-6">
+        <button onClick={onBack} className="btn-ghost flex-1 py-5 hover:btn-ghost-hover">Back a step</button>
+        <button onClick={onContinue} disabled={!can} className="btn-primary flex-2 py-5 text-lg hover:btn-primary-hover active:btn-primary-active disabled:opacity-20">
+          Let's see the profile →
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ─── Step 7: Review ───────────────────────────────────────────────────────────
+
+function SMEReviewStep({ data, onBack }: { data: SMEData; onBack: () => void }) {
+  const [confirmed, setConfirmed] = useState(false);
+  const depth = data.technicalBusinessDepth;
+  const depthLabel = depth <= 2 ? "Pure Business / GTM" : depth <= 4 ? "Business-leaning" : depth <= 6 ? "Balanced" : depth <= 8 ? "Technical-leaning" : "Deep Technical / R&D";
+
+  if (confirmed) {
+    return (
+      <div className="card-surface p-20 text-center animate-in zoom-in-95 duration-1000">
+        <div className="size-28 rounded-full bg-signal/10 text-signal grid place-items-center mx-auto text-5xl mb-10 border border-signal/20 shadow-glow animate-pulse">✓</div>
+        <h2 className="text-5xl font-display mb-6">You're in.</h2>
+        <p className="text-xl text-muted-foreground max-w-sm mx-auto leading-relaxed">
+          We've shared your expertise with the ecosystem. We already see a few spinouts that need exactly what you bring.
+        </p>
+        <div className="mt-16">
+          <Link to="/dashboard" className="btn-primary px-16 py-6 text-xl shadow-glow">
+            Take me to my dashboard
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-1000">
+      <div className="card-surface p-12 relative overflow-hidden group">
+        <div className="absolute inset-0 radial-spot opacity-5 group-hover:opacity-10 transition-opacity" />
+        <div className="absolute top-0 right-0 p-8">
+          <span className="chip bg-electric/5 text-electric border-electric/20 text-[10px] font-mono tracking-widest">
+            <span className="size-2 rounded-full bg-electric animate-pulse mr-2" />MATCH READY
+          </span>
+        </div>
+        <h2 className="text-4xl font-display mb-12">How's this look?</h2>
+        <div className="grid lg:grid-cols-2 gap-16">
+          <div className="space-y-10">
+            <section className="space-y-3">
+              <h3 className="text-[11px] font-mono uppercase tracking-[0.25em] text-muted-foreground">Identity</h3>
+              <p className="text-2xl font-display">{data.firstName} {data.lastName}</p>
+              <p className="text-base text-muted-foreground">{data.currentTitle} · {data.currentOrganization}</p>
+              <p className="text-sm text-muted-foreground font-mono">{data.email}</p>
+              <p className="text-sm text-muted-foreground font-mono">{data.city}, {data.state}</p>
+            </section>
+            <section className="space-y-3">
+              <h3 className="text-[11px] font-mono uppercase tracking-[0.25em] text-muted-foreground">Domains</h3>
+              <div className="flex flex-wrap gap-2">
+                {data.industries.map(i => (
+                  <span key={i} className="chip bg-surface-elevated/60 text-xs font-display text-foreground px-4 py-2 border-border/60">{i}</span>
+                ))}
+              </div>
+            </section>
+            <section className="space-y-3">
+              <h3 className="text-[11px] font-mono uppercase tracking-[0.25em] text-muted-foreground">Engagement</h3>
+              <div className="flex flex-wrap gap-2">
+                {data.engagementTypes.map(e => (
+                  <span key={e} className="chip bg-electric/10 text-electric border-electric/20 text-xs font-display px-4 py-2">{e}</span>
+                ))}
+              </div>
+            </section>
+            {data.researchIpHistory && (
+              <section className="space-y-2">
+                <h3 className="text-[11px] font-mono uppercase tracking-[0.25em] text-muted-foreground">Research & IP</h3>
+                <p className="text-sm text-foreground/80 leading-relaxed italic">
+                  "{data.researchIpDetail || "Has patents, papers, or tech transfer experience."}"
+                </p>
+              </section>
+            )}
+          </div>
+          <div className="space-y-8">
+            <div className="glass p-8 rounded-3xl space-y-6">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-mono text-muted-foreground uppercase tracking-widest">Technical Depth</span>
+                <span className="text-lg font-bold text-electric">{depth}/10</span>
+              </div>
+              <div className="h-2 bg-background/50 rounded-full overflow-hidden">
+                <div className="h-full bg-electric rounded-full shadow-glow transition-all duration-700" style={{ width: `${(depth / 10) * 100}%` }} />
+              </div>
+              <p className="text-xs text-muted-foreground italic">{depthLabel} — how the matching engine will weight your profile.</p>
+            </div>
+            <div className="glass p-8 rounded-3xl space-y-4">
+              <h3 className="text-[11px] font-mono uppercase tracking-[0.25em] text-muted-foreground">Startup Stages</h3>
+              <div className="flex flex-wrap gap-2">
+                {data.startupStageExpertise.map(s => (
+                  <span key={s} className="chip bg-bond/10 text-bond border-bond/20 text-xs font-display px-4 py-2">{s}</span>
+                ))}
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-6">
+              <div className="p-6 rounded-3xl bg-surface-elevated/30 border border-border/40">
+                <div className="text-[11px] font-mono uppercase text-muted-foreground mb-2 tracking-widest">Capacity</div>
+                <div className="text-lg font-display">{data.monthlyAvailability} hrs / mo</div>
+              </div>
+              <div className="p-6 rounded-3xl bg-surface-elevated/30 border border-border/40">
+                <div className="text-[11px] font-mono uppercase text-muted-foreground mb-2 tracking-widest">R&D Background</div>
+                <div className="text-lg font-display text-signal">{data.researchIpHistory ? "Yes" : "No"}</div>
+              </div>
+            </div>
+            {data.keyAchievement && (
+              <div className="glass p-8 rounded-3xl">
+                <h3 className="text-[11px] font-mono uppercase tracking-[0.25em] text-muted-foreground mb-4">Key Achievement</h3>
+                <p className="text-sm text-foreground/80 leading-relaxed italic line-clamp-4">"{data.keyAchievement}"</p>
+              </div>
+            )}
+          </div>
+        </div>
+        <div className="mt-16 pt-10 border-t border-border/60 flex items-center justify-between">
+          <button onClick={onBack} className="text-sm text-muted-foreground hover:text-foreground transition-colors underline underline-offset-8 font-medium">
+            Wait, I need to edit something
+          </button>
+          <button onClick={() => setConfirmed(true)} className="btn-primary px-16 py-6 text-lg shadow-glow transition-all active:scale-95">
+            Looks good, let's go
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Generic review step (unchanged) ─────────────────────────────────────────
 
 function AIReviewStep({ data, onBack }: any) {
   const [confirmed, setConfirmed] = useState(false);
